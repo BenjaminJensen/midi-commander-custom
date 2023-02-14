@@ -33,6 +33,7 @@
 #include "display.h"
 #include "stm32f1xx_hal_tim.h"
 #include "buttons.h"
+#include "leds.h"
 
 /* USER CODE END Includes */
 
@@ -82,7 +83,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	static uint16_t b_state = 0;
 	static uint16_t b_state_old = 0;
 
+	// Get buttons
 	b_state = buttons_scan();
+
+	// Update leds
+	if(b_state != b_state_old) {
+	 b_state_old = b_state;
+
+	 for(int i = 0; i <10; i++) {
+	  if(b_state & (1 << i)) {
+	   leds_set_led(i, LED_ON);
+	  }
+	  else {
+	   leds_set_led(i, LED_OFF);
+	  }
+
+	 }
+	}
+
+	// update display
 	cnt++;
 	if(cnt > 4) {
 	 cnt = 0;
@@ -127,6 +146,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   buttons_init();
+  leds_init();
   MX_TIM2_Init(&htim2);
 
   // Reset the USB interface in case it's still plugged in.

@@ -12,18 +12,6 @@
 // USB pins
 #define USB_ID_Pin GPIO_PIN_12
 
-// LED pins
-#define LED_1_Pin GPIO_PIN_3
-#define LED_2_Pin GPIO_PIN_8
-#define LED_3_Pin GPIO_PIN_14
-#define LED_4_Pin GPIO_PIN_12
-#define LED_5_Pin GPIO_PIN_2
-#define LED_A_Pin GPIO_PIN_4
-#define LED_B_Pin GPIO_PIN_15
-#define LED_C_Pin GPIO_PIN_13
-#define LED_D_Pin GPIO_PIN_5
-#define LED_E_Pin GPIO_PIN_1
-
 // Switch pins
 #define SW_1_Pin GPIO_PIN_15
 #define SW_2_Pin GPIO_PIN_10
@@ -152,39 +140,14 @@ static void buttons_gpio_init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  HAL_GPIO_WritePin(GPIOC, USB_ID_Pin, GPIO_PIN_RESET);
 
-  HAL_GPIO_WritePin(GPIOC, LED_C_Pin|LED_B_Pin|USB_ID_Pin, GPIO_PIN_RESET);
-
-  HAL_GPIO_WritePin(GPIOA, LED_D_Pin|LED_2_Pin, GPIO_PIN_RESET);
-
-  HAL_GPIO_WritePin(GPIOB, LED_E_Pin|LED_5_Pin|LED_4_Pin|LED_3_Pin
-                          |LED_1_Pin|LED_A_Pin, GPIO_PIN_RESET);
-
-
-  /*Configure GPIO pins : LED_C_Pin LED_B_Pin USB_ID_Pin */
-  GPIO_InitStruct.Pin = LED_C_Pin | LED_B_Pin | USB_ID_Pin;
+  /*Configure GPIO pins :  USB_ID_Pin */
+  GPIO_InitStruct.Pin = USB_ID_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SW_B_Pin */
-
-  /*
-   * LED Outputs
-   */
-  GPIO_InitStruct.Pin = LED_D_Pin | LED_2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = LED_E_Pin | LED_5_Pin | LED_4_Pin | LED_3_Pin | LED_1_Pin | LED_A_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
 
   /*
    * Switch Inputs
