@@ -116,52 +116,21 @@ void buttons_init() {
 
 uint16_t buttons_scan() {
 	uint16_t button_state = 0;
-/*
-	uint32_t ida = GPIOA->IDR;
-	uint32_t idb = GPIOB->IDR;
-	uint32_t idc = GPIOC->IDR;
-*/
-	// Port A: SW_C_Pin | SW_D_Pin | SW_E_Pin | SW_2_Pin | SW_1_Pin
-	// Port B: SW_5_Pin | SW_4_Pin | SW_3_Pin | SW_A_Pin
-	// Port C: SW_B_Pin
 
 	for(int i = 0; i < num_buttons; i++) {
 	 if( (buttons[i].port->IDR & buttons[i].pin) == 0) {
-	  button_state |= (1 << i);
+	  buttons[i].cnt++;
+	  if(buttons[i].cnt >= debounce_threshold) {
+	   button_state |= (1 << i);
+	  }
+	 }
+	 else {
+	  if(buttons[i].cnt > 0) {
+	   buttons[i].cnt--;
+	  }
 	 }
 	}
-	/*
-	if(ida & SW_1_Pin) {
-		button_state |= (1 << 0);
-	}
-	if(ida & SW_2_Pin) {
-		button_state |= (1 << 1);
-	}
-	if(idb & SW_3_Pin) {
-		button_state |= (1 << 2);
-	}
-	if(idb & SW_4_Pin) {
-		button_state |= (1 << 3);
-	}
-	if(idb & SW_5_Pin) {
-		button_state |= (1 << 4);
-	}
-	if(idb & SW_A_Pin) {
-		button_state |= (1 << 5);
-	}
-	if(idc & SW_B_Pin) {
-		button_state |= (1 << 6);
-	}
-	if(ida & SW_C_Pin) {
-		button_state |= (1 << 7);
-	}
-	if(ida & SW_D_Pin) {
-		button_state |= (1 << 8);
-	}
-	if(ida & SW_E_Pin) {
-		button_state |= (1 << 9);
-	}
-*/
+
 	return button_state;
 }
 /*

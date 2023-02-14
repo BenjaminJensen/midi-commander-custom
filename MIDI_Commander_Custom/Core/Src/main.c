@@ -78,18 +78,16 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	static uint8_t c = 0;
-	static uint8_t cnt = 0;
-	if(cnt > 9) {
-		display_disp_button(buttons_scan());
-		if(c > 9) {
-			c = 0;
-		}
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-		cnt = 0;
-	}
-	else {
-		cnt++;
+ static uint8_t cnt = 0;
+	static uint16_t b_state = 0;
+	static uint16_t b_state_old = 0;
+
+	b_state = buttons_scan();
+	cnt++;
+	if(cnt > 4) {
+	 cnt = 0;
+	 b_state_old = b_state;
+		display_disp_button(b_state);
 	}
 }
 
