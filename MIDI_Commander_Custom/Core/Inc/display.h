@@ -11,5 +11,6 @@
 void display_init(void);
 void display_setConfigName(void);
 void display_setBankName(uint8_t bankNumber);
+void display_disp_button(uint16_t b);
 
 #endif /* INC_DISPLAY_H_ */

@@ -31,12 +31,15 @@
 #include "midi_cmds.h"
 #include "switch_router.h"
 #include "display.h"
+#include "stm32f1xx_hal_tim.h"
+#include "buttons.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+  TIM_HandleTypeDef htim2;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -62,18 +65,33 @@ uint8_t f_sys_config_complete = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	static uint8_t c = 0;
+	static uint8_t cnt = 0;
+	if(cnt > 9) {
+		display_disp_button(buttons_scan());
+		if(c > 9) {
+			c = 0;
+		}
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		cnt = 0;
+	}
+	else {
+		cnt++;
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -105,12 +123,13 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  buttons_init();
+  MX_TIM2_Init(&htim2);
 
   // Reset the USB interface in case it's still plugged in.
   HAL_GPIO_WritePin(USB_ID_GPIO_Port, USB_ID_Pin, GPIO_PIN_RESET);
@@ -135,7 +154,8 @@ int main(void)
 
   HAL_Delay(200);
   f_sys_config_complete = 1; // Don't scan switch changes until everything is init'd
-  display_setBankName(0);
+  //display_setBankName(0);
+  HAL_TIM_Base_Start_IT(&htim2);
 
   /* USER CODE END 2 */
 
@@ -143,7 +163,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  handle_switches();
+	  //handle_switches();
 
     /* USER CODE END WHILE */
 
@@ -195,6 +215,47 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+
+static void MX_TIM2_Init(TIM_HandleTypeDef *handler)
+{
+
+	/* Peripheral clock enable */
+	__HAL_RCC_TIM2_CLK_ENABLE();
+	/* TIM2 interrupt Init */
+	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  // CLK = 72mhz
+  // TIM_CLK = 72mhz
+  // TIM_CLK/(TIM_PSC+1)/(TIM_ARR + 1)
+  // 72mhz / ( 1001 - 1 ) / (721 - 1) = 10ms
+  handler->Instance = TIM2;
+  handler->Init.Prescaler = 1001;
+  handler->Init.CounterMode = TIM_COUNTERMODE_UP;
+  handler->Init.Period = 721;
+  handler->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  handler->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(handler) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(handler, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(handler, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+
 }
 
 /**
@@ -283,75 +344,6 @@ static void MX_DMA_Init(void)
 
 }
 
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, LED_C_Pin|LED_B_Pin|USB_ID_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED_D_Pin|LED_2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_E_Pin|LED_5_Pin|LED_4_Pin|LED_3_Pin
-                          |LED_1_Pin|LED_A_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : LED_C_Pin LED_B_Pin USB_ID_Pin */
-  GPIO_InitStruct.Pin = LED_C_Pin|LED_B_Pin|USB_ID_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SW_B_Pin */
-  GPIO_InitStruct.Pin = SW_B_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(SW_B_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : SW_C_Pin SW_D_Pin SW_E_Pin SW_2_Pin
-                           SW_1_Pin */
-  GPIO_InitStruct.Pin = SW_C_Pin|SW_D_Pin|SW_E_Pin|SW_2_Pin
-                          |SW_1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : LED_D_Pin LED_2_Pin */
-  GPIO_InitStruct.Pin = LED_D_Pin|LED_2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : LED_E_Pin LED_5_Pin LED_4_Pin LED_3_Pin
-                           LED_1_Pin LED_A_Pin */
-  GPIO_InitStruct.Pin = LED_E_Pin|LED_5_Pin|LED_4_Pin|LED_3_Pin
-                          |LED_1_Pin|LED_A_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : SW_5_Pin SW_4_Pin SW_3_Pin SW_A_Pin */
-  GPIO_InitStruct.Pin = SW_5_Pin|SW_4_Pin|SW_3_Pin|SW_A_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-}
 
 /* USER CODE BEGIN 4 */
 
