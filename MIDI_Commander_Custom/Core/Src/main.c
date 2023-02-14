@@ -87,6 +87,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	b_state = buttons_scan();
 
 	// Update leds
+	led_update_task();
+
 	if(b_state != b_state_old) {
 	 b_state_old = b_state;
 
@@ -97,7 +99,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	  else {
 	   leds_set_led(i, LED_OFF);
 	  }
-
 	 }
 	}
 

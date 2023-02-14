@@ -30,8 +30,8 @@ typedef struct {
 }led_t;
 
 #define NUM_LEDS (10)
-
 static const int number_leds = NUM_LEDS;
+static const uint8_t blink_cnt_max = 50;
 
 static led_t leds[NUM_LEDS] = {
   {
@@ -89,13 +89,14 @@ static led_t leds[NUM_LEDS] = {
 void leds_init() {
  leds_gpio_init();
  for(int i = 0; i < number_leds; i++) {
-  leds_set_led(i, LED_OFF);
+  leds_set_led(i, LED_BLINK);
  }
 }
 
 void leds_set_led(uint8_t led, enum led_states_e state) {
  //HAL_GPIO_WritePin(GPIOC, USB_ID_Pin, GPIO_PIN_RESET);
  if(led < number_leds) {
+  leds[led].state = state;
   switch(state) {
    case LED_OFF:
     HAL_GPIO_WritePin(leds[led].port, leds[led].pin, GPIO_PIN_SET);
@@ -108,10 +109,36 @@ void leds_set_led(uint8_t led, enum led_states_e state) {
    default:
     break;
   }
-
  }
 }
 
+void led_update_task(void) {
+ static uint8_t cnt = 0;
+
+ if(cnt > blink_cnt_max) {
+  cnt = 0;
+  for(int i = 0; i < number_leds; i++) {
+   if(leds[i].state == LED_BLINK) {
+    HAL_GPIO_WritePin(leds[i].port, leds[i].pin, GPIO_PIN_SET);
+   }
+  }
+ }
+ else if(cnt > (blink_cnt_max / 2)) {
+  cnt++;
+  for(int i = 0; i < number_leds; i++) {
+   if(leds[i].state == LED_BLINK) {
+    HAL_GPIO_WritePin(leds[i].port, leds[i].pin, GPIO_PIN_RESET);
+   }
+  }
+ }
+ else {
+  cnt++;
+ }
+
+}
+/*
+ * Private functions
+ */
 static void leds_gpio_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
