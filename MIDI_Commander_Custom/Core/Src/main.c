@@ -23,13 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ssd1306.h"
-#include "ssd1306_tests.h"
 #include <stdbool.h>
-#include "usbd_midi_if.h"
-#include "midi_defines.h"
-#include "midi_cmds.h"
-#include "switch_router.h"
 #include "display.h"
 #include "stm32f1xx_hal_tim.h"
 
@@ -75,16 +69,6 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-static uint16_t button_changed(uint16_t old, uint16_t new, uint8_t num) {
-  // No change:
-  //(new & (1 << num)) == (old & (1 << num))
-  // Change:
-  // (new & (1 << num)) != (old & (1 << num))
-
-
-  return (old & new & (1 << num)) != 0? 1 : 0;
-}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
@@ -182,16 +166,10 @@ int main(void)
 	  Error(msg);
   }
 
-  display_setConfigName();
-
-  sw_led_init();
-
   HAL_Delay(1000);
   HAL_GPIO_WritePin(USB_ID_GPIO_Port, USB_ID_Pin, GPIO_PIN_SET);
 
-  HAL_Delay(200);
-  f_sys_config_complete = 1; // Don't scan switch changes until everything is init'd
-  //display_setBankName(0);
+
   HAL_TIM_Base_Start_IT(&htim2);
 
   /* USER CODE END 2 */
@@ -356,9 +334,11 @@ static void MX_DMA_Init(void)
  * @brief This function can be called to display an error message on the screen,
  * if the display is on, before calling Error_Handler() to stop all operations.
  */
+
 void Error(char *msg) {
+/*
 	if (ssd1306_GetDisplayOn() == 0) {
-		/* Display is on */
+		// Display is on
 		ssd1306_Fill(Black);
 		ssd1306_SetCursor(2, 0);
 		ssd1306_WriteString("Error:", Font_6x8, White);
@@ -366,7 +346,7 @@ void Error(char *msg) {
 		ssd1306_WriteString(msg, Font_6x8, White);
 		ssd1306_UpdateScreen();
 	}
-
+  */
 	Error_Handler();
 }
 

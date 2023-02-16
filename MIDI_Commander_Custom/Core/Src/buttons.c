@@ -113,7 +113,7 @@ uint16_t buttons_scan() {
     else {
       buttons[i].cnt &= 0xFE;
     }
-    // Evaluate state (40ms debounce)
+    // Evaluate state (4 consecutive positive reads)
     if((buttons[i].cnt & 0x0F) == 0x0F) {
       button_state |= (1 << i);
     }
