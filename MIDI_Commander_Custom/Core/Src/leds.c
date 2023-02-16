@@ -99,10 +99,10 @@ void leds_set_led(uint8_t led, enum led_states_e state) {
   leds[led].state = state;
   switch(state) {
    case LED_OFF:
-    HAL_GPIO_WritePin(leds[led].port, leds[led].pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin((GPIO_TypeDef*)leds[led].port, leds[led].pin, GPIO_PIN_SET);
     break;
    case LED_ON:
-    HAL_GPIO_WritePin(leds[led].port, leds[led].pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin((GPIO_TypeDef*)leds[led].port, leds[led].pin, GPIO_PIN_RESET);
     break;
    case LED_BLINK:
     break;
@@ -119,7 +119,7 @@ void led_update_task(void) {
   cnt = 0;
   for(int i = 0; i < number_leds; i++) {
    if(leds[i].state == LED_BLINK) {
-    HAL_GPIO_WritePin(leds[i].port, leds[i].pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin((GPIO_TypeDef*)leds[i].port, leds[i].pin, GPIO_PIN_SET);
    }
   }
  }
@@ -127,7 +127,7 @@ void led_update_task(void) {
   cnt++;
   for(int i = 0; i < number_leds; i++) {
    if(leds[i].state == LED_BLINK) {
-    HAL_GPIO_WritePin(leds[i].port, leds[i].pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin((GPIO_TypeDef*)leds[i].port, leds[i].pin, GPIO_PIN_RESET);
    }
   }
  }

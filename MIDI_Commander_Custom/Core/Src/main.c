@@ -32,8 +32,10 @@
 #include "switch_router.h"
 #include "display.h"
 #include "stm32f1xx_hal_tim.h"
+
 #include "buttons.h"
 #include "leds.h"
+#include "uart.h"
 
 /* USER CODE END Includes */
 
@@ -56,7 +58,6 @@
 I2C_HandleTypeDef hi2c1;
 DMA_HandleTypeDef hdma_i2c1_tx;
 
-UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
@@ -67,7 +68,6 @@ uint8_t f_sys_config_complete = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_DMA_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
@@ -95,9 +95,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	 for(int i = 0; i <10; i++) {
 	  if(b_state & (1 << i)) {
 	   leds_set_led(i, LED_ON);
+     uart_putc(0xB0); // CC chan 0
+     uart_putc(80); // CC nr
+     uart_putc(0x7F); // value
 	  }
 	  else {
 	   leds_set_led(i, LED_OFF);
+     uart_putc(0xB0); // CC chan 0
+     uart_putc(80); // CC nr
+     uart_putc(0x00); // value
 	  }
 	 }
 	}
@@ -142,12 +148,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_DMA_Init();
-  MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+
   buttons_init();
   leds_init();
+  uart_init();
   MX_TIM2_Init(&htim2);
 
   // Reset the USB interface in case it's still plugged in.
@@ -311,38 +318,6 @@ static void MX_I2C1_Init(void)
 
 }
 
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 31250;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
 
 /**
   * Enable DMA controller clock
