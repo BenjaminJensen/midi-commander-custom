@@ -7,7 +7,6 @@
 #include "stm32f1xx_hal.h"
 #include "midi_defines.h"
 #include "flash_midi_settings.h"
-#include "midi_cmds.h"
 #include <string.h>
 
 extern I2C_HandleTypeDef hi2c1;
@@ -189,7 +188,7 @@ uint16_t MIDI_DataRx(uint8_t *msg, uint16_t length)
 			// Realtime messages, like sync, if enabled send through to serial midi port.
 			if(pGlobalSettings[GLOBAL_SETTINGS_REALTIME_PASS]){
 				if(msg[processed_data_cnt+1] == 0xF8 || msg[processed_data_cnt+1] == 0xFA ||msg[processed_data_cnt+1] == 0xFC){
-					midiCmd_send_byte_serial(msg[processed_data_cnt+1]);
+					//midiCmd_send_byte_serial(msg[processed_data_cnt+1]);
 				}
 			}
 			processed_data_cnt += 2;

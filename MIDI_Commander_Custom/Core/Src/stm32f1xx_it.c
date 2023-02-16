@@ -195,7 +195,6 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
-  sw_scan();
   ssd1306_tick();
 
   /* USER CODE END SysTick_IRQn 1 */
