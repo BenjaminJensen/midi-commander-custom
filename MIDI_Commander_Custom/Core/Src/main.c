@@ -76,6 +76,15 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+static uint16_t button_changed(uint16_t old, uint16_t new, uint8_t num) {
+  // No change:
+  //(new & (1 << num)) == (old & (1 << num))
+  // Change:
+  // (new & (1 << num)) != (old & (1 << num))
+
+
+  return (old & new & (1 << num)) != 0? 1 : 0;
+}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
@@ -90,22 +99,24 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	led_update_task();
 
 	if(b_state != b_state_old) {
-	 b_state_old = b_state;
-
 	 for(int i = 0; i <10; i++) {
-	  if(b_state & (1 << i)) {
-	   leds_set_led(i, LED_ON);
-     uart_putc(0xB0); // CC chan 0
-     uart_putc(80); // CC nr
-     uart_putc(0x7F); // value
-	  }
-	  else {
-	   leds_set_led(i, LED_OFF);
-     uart_putc(0xB0); // CC chan 0
-     uart_putc(80); // CC nr
-     uart_putc(0x00); // value
-	  }
-	 }
+	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
+	     if(b_state & (1 << i)) {
+        leds_set_led(i, LED_ON);
+        uart_putc(0xB0); // CC chan 0
+        uart_putc(i); // CC nr
+        uart_putc(0x7F); // value
+       }
+       else {
+        leds_set_led(i, LED_OFF);
+        uart_putc(0xB0); // CC chan 0
+        uart_putc(i); // CC nr
+        uart_putc(0x00); // value
+       }
+	   }
+	 } // for loop
+
+   b_state_old = b_state;
 	}
 
 	// update display

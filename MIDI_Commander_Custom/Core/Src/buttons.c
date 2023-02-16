@@ -106,17 +106,17 @@ uint16_t buttons_scan() {
 	uint16_t button_state = 0;
 
 	for(int i = 0; i < num_buttons; i++) {
-	 if( (buttons[i].port->IDR & buttons[i].pin) == 0) {
-	  buttons[i].cnt++;
-	  if(buttons[i].cnt >= debounce_threshold) {
-	   button_state |= (1 << i);
-	  }
-	 }
-	 else {
-	  if(buttons[i].cnt > 0) {
-	   buttons[i].cnt--;
-	  }
-	 }
+	  buttons[i].cnt = buttons[i].cnt << 1;
+    if( (buttons[i].port->IDR & buttons[i].pin) == 0) {
+      buttons[i].cnt += 0x01;
+    }
+    else {
+      buttons[i].cnt &= 0xFE;
+    }
+    // Evaluate state (40ms debounce)
+    if((buttons[i].cnt & 0x0F) == 0x0F) {
+      button_state |= (1 << i);
+    }
 	}
 
 	return button_state;
