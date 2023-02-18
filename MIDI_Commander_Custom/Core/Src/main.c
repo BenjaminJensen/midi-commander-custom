@@ -32,6 +32,8 @@
 #include "uart.h"
 #include "app.h"
 
+#include "SEGGER_RTT.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,7 +107,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
  static uint8_t cnt = 0;
 	static uint16_t b_state = 0;
 	static uint16_t b_state_old = 0;
-
+	char rtt_buf[10] = "But0,s0\r\n\0";
 	// Get buttons
 	b_state = buttons_scan();
 
@@ -115,13 +117,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	if(b_state != b_state_old) {
 	 for(int i = 0; i <10; i++) {
 	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
+	     rtt_buf[3] = '0' + i;
 	     if(b_state & (1 << i)) {
         leds_set_led(i, LED_ON);
         send_midi(i, 1);
+
+        rtt_buf[6] = '1';
+        SEGGER_RTT_WriteString(0, rtt_buf);
        }
        else {
         leds_set_led(i, LED_OFF);
         send_midi(i, 0);
+        rtt_buf[6] = '0';
+        SEGGER_RTT_WriteString(0, rtt_buf);
        }
 	   }
 	 } // for loop
@@ -158,7 +166,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
-
+   SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal - Bongo Controller\r\n");
+   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_SKIP);
   /* USER CODE END Init */
 
   /* Configure the system clock */
