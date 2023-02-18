@@ -59,48 +59,9 @@ void Error(char *msg);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LED_C_Pin GPIO_PIN_13
-#define LED_C_GPIO_Port GPIOC
-#define SW_B_Pin GPIO_PIN_14
-#define SW_B_GPIO_Port GPIOC
-#define LED_B_Pin GPIO_PIN_15
-#define LED_B_GPIO_Port GPIOC
-#define SW_C_Pin GPIO_PIN_0
-#define SW_C_GPIO_Port GPIOA
-#define SW_D_Pin GPIO_PIN_4
-#define SW_D_GPIO_Port GPIOA
-#define LED_D_Pin GPIO_PIN_5
-#define LED_D_GPIO_Port GPIOA
-#define SW_E_Pin GPIO_PIN_6
-#define SW_E_GPIO_Port GPIOA
-#define LED_E_Pin GPIO_PIN_1
-#define LED_E_GPIO_Port GPIOB
-#define LED_5_Pin GPIO_PIN_2
-#define LED_5_GPIO_Port GPIOB
-#define SW_5_Pin GPIO_PIN_10
-#define SW_5_GPIO_Port GPIOB
-#define LED_4_Pin GPIO_PIN_12
-#define LED_4_GPIO_Port GPIOB
-#define SW_4_Pin GPIO_PIN_13
-#define SW_4_GPIO_Port GPIOB
-#define LED_3_Pin GPIO_PIN_14
-#define LED_3_GPIO_Port GPIOB
-#define SW_3_Pin GPIO_PIN_15
-#define SW_3_GPIO_Port GPIOB
-#define LED_2_Pin GPIO_PIN_8
-#define LED_2_GPIO_Port GPIOA
-#define SW_2_Pin GPIO_PIN_10
-#define SW_2_GPIO_Port GPIOA
-#define SW_1_Pin GPIO_PIN_15
-#define SW_1_GPIO_Port GPIOA
 #define USB_ID_Pin GPIO_PIN_12
 #define USB_ID_GPIO_Port GPIOC
-#define LED_1_Pin GPIO_PIN_3
-#define LED_1_GPIO_Port GPIOB
-#define LED_A_Pin GPIO_PIN_4
-#define LED_A_GPIO_Port GPIOB
-#define SW_A_Pin GPIO_PIN_5
-#define SW_A_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 #define FIRMWARE_VERSION	"0.1A"

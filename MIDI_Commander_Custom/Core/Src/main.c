@@ -30,6 +30,7 @@
 #include "buttons.h"
 #include "leds.h"
 #include "uart.h"
+#include "app.h"
 
 /* USER CODE END Includes */
 
@@ -69,9 +70,38 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void send_midi(uint8_t but, uint8_t state) {
+  uint8_t cc = 0;
 
+  switch(but) {
+    case 0:
+      cc = 80;
+      break;
+    case 1:
+      cc = 81;
+      break;
+    case 2:
+      cc = 82;
+      break;
+    default:
+      cc = but;
+      break;
+  }
+
+  uart_putc(0xB0); // CC chan 0
+  uart_putc(cc); // CC nr
+  if(state == 0) {
+    uart_putc(0x00); // value
+  }
+  else {
+    uart_putc(0x7f); // value
+
+  }
+
+}
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
+
  static uint8_t cnt = 0;
 	static uint16_t b_state = 0;
 	static uint16_t b_state_old = 0;
@@ -87,15 +117,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
 	     if(b_state & (1 << i)) {
         leds_set_led(i, LED_ON);
-        uart_putc(0xB0); // CC chan 0
-        uart_putc(i); // CC nr
-        uart_putc(0x7F); // value
+        send_midi(i, 1);
        }
        else {
         leds_set_led(i, LED_OFF);
-        uart_putc(0xB0); // CC chan 0
-        uart_putc(i); // CC nr
-        uart_putc(0x00); // value
+        send_midi(i, 0);
        }
 	   }
 	 } // for loop
@@ -110,6 +136,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	 b_state_old = b_state;
 		display_disp_button(b_state);
 	}
+
 }
 
 /* USER CODE END 0 */
@@ -176,10 +203,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  app_init();
   while (1)
   {
 	  //handle_switches();
-
+    app_run();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

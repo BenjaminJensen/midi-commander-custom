@@ -24,6 +24,10 @@ I2C Display
 Address is 0x3C
 Is a ssd1306 - seems to work fine with this library:
 https://github.com/afiskon/stm32-ssd1306
-
+Could be 128x64
+    // Min x: 2
+    // Max x: 129
+    // Min Y: 0
+    // Max Y: 63
 
 For the EEPROM, only the first 128 bytes appear to have anything in them.  This leaves 896 bytes free, starting at the 128 byte offset.

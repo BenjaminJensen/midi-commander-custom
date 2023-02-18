@@ -115,7 +115,11 @@ uint16_t buttons_scan() {
     }
     // Evaluate state (4 consecutive positive reads)
     if((buttons[i].cnt & 0x0F) == 0x0F) {
+      // Button push
       button_state |= (1 << i);
+    }
+    else if((buttons[i].cnt & 0xF0) == 0xF0 && buttons[i].cnt != 0xFF) {
+      // release
     }
 	}
 

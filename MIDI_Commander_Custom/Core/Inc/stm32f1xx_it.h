@@ -28,7 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -63,6 +63,8 @@ void USB_LP_CAN1_RX0_IRQHandler(void);
 void I2C1_EV_IRQHandler(void);
 void USART2_IRQHandler(void);
 /* USER CODE BEGIN EFP */
+
+uint32_t get_systic_counter(void);
 
 /* USER CODE END EFP */
 
