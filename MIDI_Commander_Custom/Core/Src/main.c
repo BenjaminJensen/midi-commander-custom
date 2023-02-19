@@ -32,7 +32,6 @@
 #include "uart.h"
 #include "app.h"
 #include "event.h"
-
 #include "SEGGER_RTT.h"
 
 /* USER CODE END Includes */
@@ -73,6 +72,7 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/*
 static void send_midi(uint8_t but, uint8_t state) {
   uint8_t cc = 0;
 
@@ -102,18 +102,20 @@ static void send_midi(uint8_t but, uint8_t state) {
   }
 
 }
+*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-
- static uint8_t cnt = 0;
 	static uint16_t b_state = 0;
-	static uint16_t b_state_old = 0;
-	char rtt_buf[10] = "But0,s0\r\n\0";
 	// Get buttons
 	b_state = buttons_scan();
-
 	// Update leds
-	led_update_task();
+  led_update_task();
+
+  /*
+ static uint8_t cnt = 0;
+  static uint16_t b_state_old = 0;
+  char rtt_buf[10] = "But0,s0\r\n\0";
+
 	if(b_state != b_state_old) {
 	 for(int i = 0; i <10; i++) {
 	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
@@ -143,7 +145,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	 b_state_old = b_state;
 		display_disp_button(b_state);
 	}
-
+  */
 }
 
 /* USER CODE END 0 */
