@@ -44,7 +44,7 @@ void ssd1306_tick(void);
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 
-static volatile uint32_t systic_counter = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -185,21 +185,7 @@ void PendSV_Handler(void)
   /* USER CODE END PendSV_IRQn 1 */
 }
 
-/**
-  * @brief This function handles System tick timer.
-  */
-void SysTick_Handler(void)
-{
-  /* USER CODE BEGIN SysTick_IRQn 0 */
 
-  /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  ssd1306_tick();
-  systic_counter++;
-  /* USER CODE END SysTick_IRQn 1 */
-}
 
 /******************************************************************************/
 /* STM32F1xx Peripheral Interrupt Handlers                                    */
@@ -309,8 +295,6 @@ void TIM2_IRQHandler(void)
 
 
 /* USER CODE BEGIN 1 */
-uint32_t get_systic_counter(void) {
-  return systic_counter;
-}
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

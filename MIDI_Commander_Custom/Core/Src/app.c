@@ -6,43 +6,50 @@
  */
 
 #include "stm32f1xx_it.h"
+#include "scheduler.h"
+#include <stdio.h>
+#include "SEGGER_RTT.h"
+
+static task_tcb_t task1_tcb;
+static task_tcb_t task2_tcb;
+
+static void task1(void);
+static void task2(void);
 
 void app_init() {
-
+  task_create(&task1_tcb, 1000, &task1);
+  task_start(&task1_tcb);
+  task_create(&task2_tcb, 500, &task2);
+  task_start(&task2_tcb);
 }
 
-uint32_t app_get_cnt_diff(uint32_t new, uint32_t old) {
-  uint32_t diff = 0;
-  if(old < new ) {
-    diff = new - old;
-  }
-  else if(old > new) {
-    diff = ( 0xFFFFFFFF - old) + new;
-  }
 
-  return diff;
-}
 
 void app_run() {
-  static uint32_t cnt_old = 0;
-  static uint32_t cnt = 0;
-  static uint32_t but_cnt = 0;
-  uint32_t diff;
-  cnt = get_systic_counter();
-  diff = app_get_cnt_diff(cnt, cnt_old);
-
-  if(diff > 0) {
-    but_cnt += diff;
-
-    if(but_cnt >= 10) {
-      //uint16_t but = buttons_scan();
-    }
 
 
-    cnt_old = cnt;
-  }
-
+  task_scheduler_run();
   // scan buttons 10ms
 
   // process events
+}
+
+static void task1(void) {
+  static int cnt = 0;
+
+  char buf[32];
+  int num = sprintf(buf, "Task 1 (%d)\r\n", cnt);
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
+  cnt++;
+}
+
+static void task2(void) {
+  static int cnt = 0;
+
+  char buf[32];
+  int num = sprintf(buf, "Task 2 (%d)\r\n", cnt);
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
+  cnt++;
 }
