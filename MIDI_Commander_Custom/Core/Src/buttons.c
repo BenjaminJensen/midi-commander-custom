@@ -6,6 +6,8 @@
  */
 
 #include "buttons.h"
+#include "event.h"
+
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_gpio.h"
 
@@ -24,10 +26,13 @@
 #define SW_D_Pin GPIO_PIN_4
 #define SW_E_Pin GPIO_PIN_6
 
+enum button_state_e {BUTTON_PRESSED, BUTTON_RELEASED, BUTTON_HOLD};
 typedef struct {
 	uint8_t cnt;
 	const GPIO_TypeDef* port;
 	const uint16_t pin;
+	enum button_state_e state;
+
 } button_debounce_t;
 
 #define NUM_BUT (10)
@@ -38,52 +43,62 @@ static button_debounce_t buttons[NUM_BUT] = {
   {
     .port = GPIOA,
     .pin = SW_1_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
 	},
   {
     .port = GPIOA,
     .pin = SW_2_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOB,
     .pin = SW_3_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOB,
     .pin = SW_4_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOB,
     .pin = SW_5_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOB,
     .pin = SW_A_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOC,
     .pin = SW_B_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOA,
     .pin = SW_C_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOA,
     .pin = SW_D_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   },
   {
     .port = GPIOA,
     .pin = SW_E_Pin,
-    .cnt = 0
+    .cnt = 0,
+    .state = BUTTON_RELEASED
   }
 };
 /*
@@ -104,7 +119,9 @@ void buttons_init() {
 
 uint16_t buttons_scan() {
 	uint16_t button_state = 0;
+  event_t e;
 
+  // Run through buttons
 	for(int i = 0; i < num_buttons; i++) {
 	  buttons[i].cnt = buttons[i].cnt << 1;
     if( (buttons[i].port->IDR & buttons[i].pin) == 0) {
@@ -116,10 +133,22 @@ uint16_t buttons_scan() {
     // Evaluate state (4 consecutive positive reads)
     if((buttons[i].cnt & 0x0F) == 0x0F) {
       // Button push
+      if(buttons[i].state != BUTTON_PRESSED) {
+        buttons[i].state = BUTTON_PRESSED;
+        e.event.type = EVENT_BUTTON_PRESS;
+        e.event.data0 = i;
+        event_put(e);
+      }
       button_state |= (1 << i);
     }
     else if((buttons[i].cnt & 0xF0) == 0xF0 && buttons[i].cnt != 0xFF) {
       // release
+      if(buttons[i].state != BUTTON_RELEASED) {
+        buttons[i].state = BUTTON_RELEASED;
+        e.event.type = EVENT_BUTTON_RELEASE;
+        e.event.data0 = i;
+        event_put(e);
+      }
     }
 	}
 

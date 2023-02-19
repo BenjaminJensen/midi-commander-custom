@@ -48,7 +48,7 @@ static void task1(void) {
   char buf[32];
   int num = sprintf(buf, "Task 1 (%d)\r\n", cnt);
   buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  //SEGGER_RTT_WriteString(0, buf);
 
   uint32_t item;
   uint8_t data = 0;
@@ -59,7 +59,7 @@ static void task1(void) {
   if(data) {
     int num = sprintf(buf, "Task 2 r: %d (%lu)\r\n", data, item);
     buf[num] = 0;
-    SEGGER_RTT_WriteString(0, buf);
+    //SEGGER_RTT_WriteString(0, buf);
   }
 }
 
@@ -72,6 +72,6 @@ static void task2(void) {
   char buf[32];
   int num = sprintf(buf, "Task 2 (%d)\r\n", cnt);
   buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  //SEGGER_RTT_WriteString(0, buf);
   cnt++;
 }

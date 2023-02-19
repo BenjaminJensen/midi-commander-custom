@@ -31,6 +31,7 @@
 #include "leds.h"
 #include "uart.h"
 #include "app.h"
+#include "event.h"
 
 #include "SEGGER_RTT.h"
 
@@ -113,7 +114,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 
 	// Update leds
 	led_update_task();
-
 	if(b_state != b_state_old) {
 	 for(int i = 0; i <10; i++) {
 	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
@@ -121,7 +121,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	     if(b_state & (1 << i)) {
         leds_set_led(i, LED_ON);
         send_midi(i, 1);
-
         rtt_buf[6] = '1';
         SEGGER_RTT_WriteString(0, rtt_buf);
        }
@@ -213,10 +212,12 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   app_init();
+  event_init();
   while (1)
   {
 	  //handle_switches();
     app_run();
+    event_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
