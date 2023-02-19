@@ -59,16 +59,7 @@ void event_process() {
 
 
 
-
-static void event_handle_button(event_t e) {
-/*
-  char buf[32];
-  int num;
-
-  num = sprintf(buf, "Button event %d, button(%d)\r\n", e.event.type, e.event.data0);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
-*/
+static void event_handle_button_preset(event_t e) {
   switch(e.event.data0) {
     case 0:
       if(system_mode == MODE_PRESET) {
@@ -131,8 +122,12 @@ static void event_handle_button(event_t e) {
       break;
     default:
       break;
-
   }
+}
 
+static void event_handle_button(event_t e) {
+  if(system_mode == MODE_PRESET) {
+    event_handle_button_preset(e);
+  }
 }
 
