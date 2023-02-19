@@ -11,5 +11,8 @@
 #include <stdint.h>
 
 void preset_ia(uint8_t nr, uint8_t state);
+void preset_bank_up(void);
+void preset_bank_down(void);
+void preset_load_relativ(uint8_t nr);
 
 #endif /* INC_PRESET_H_ */

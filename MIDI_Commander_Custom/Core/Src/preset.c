@@ -125,9 +125,31 @@ void preset_ia(uint8_t nr, uint8_t state) {
 }
 
 void preset_bank_up() {
+  // Debug
+  char buf[16];
+  int num;
 
+  num = sprintf(buf, "Bank up\r\n");
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
 }
 
 void preset_bank_down() {
+  // Debug
+  char buf[16];
+  int num;
 
+  num = sprintf(buf, "Bank down\r\n");
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
+}
+
+void preset_load_relativ(uint8_t nr) {
+  // Debug
+  char buf[20];
+  int num;
+
+  num = sprintf(buf, "Load preset(%d)\r\n", nr);
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
 }

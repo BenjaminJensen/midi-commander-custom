@@ -99,6 +99,36 @@ static void event_handle_button(event_t e) {
         preset_ia(2, 0);
       }
       break;
+    case 4:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_up();
+      }
+      break;
+    case 5:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(0);
+      }
+      break;
+    case 6:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(1);
+      }
+      break;
+    case 7:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(2);
+      }
+      break;
+    case 8:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(3);
+      }
+      break;
+    case 9:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_down();
+      }
+      break;
     default:
       break;
 
