@@ -20,7 +20,7 @@ int fifo_init(fifo_handler_t *handle, uint32_t mask, uint32_t *buffer) {
 
 int fifo_put(fifo_handler_t *handle, uint32_t item) {
   uint32_t tmphead;
-  uint32_t error = 0;
+  uint32_t error = FIFO_OK;
 
   // calculate buffer index
   tmphead = ( handle->head + 1) & handle->mask;
@@ -42,7 +42,7 @@ int fifo_put(fifo_handler_t *handle, uint32_t item) {
 
 int fifo_get(fifo_handler_t *handle, uint32_t *intem_out) {
   uint32_t tmptail;
-  int error = 0;
+  int error = FIFO_OK;
 
   if ( handle->head == handle->tail ) {
     error = -2;
