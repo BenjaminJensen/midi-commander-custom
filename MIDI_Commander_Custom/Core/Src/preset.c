@@ -7,6 +7,7 @@
 
 #include "preset.h"
 #include "midi.h"
+#include "settings.h"
 #include <stdio.h>
 #include "SEGGER_RTT.h"
 
@@ -32,62 +33,12 @@ static preset_t preset_current = {0};
 static uint8_t preset_number_current = 0;
 static uint8_t preset_bank_current = 0;
 
-// IA
-enum ia_mode_e {IA_MODE_LATCH, IA_MODE_TOGGLE};
-enum ia_state_e {IA_STATE_ON, IA_STATE_OFF};
-enum ia_type_e {IA_TYPE_PC, IA_TYPE_CC};
-/*
- * type CC / PC
- * mode 4[latch / toggle] 4[state]
- * midi chan
- * midi0 (PC / CC)
- * midi1 (CC ON)
- * midi2 (CC OFF)
- */
-typedef struct {
-  enum ia_type_e type;
-  uint8_t mode : 4;
-  uint8_t state : 4;
-  uint8_t midi_chan;
-  uint8_t midi_data0;
-  uint8_t midi_data1;
-  uint8_t midi_data2;
-} ia_t;
 
-#define NUM_IA (3)
 
 /****************************************
  * Private functions
  ***************************************/
-static ia_t ias[NUM_IA] = {
-    {
-      .type = IA_TYPE_CC,
-      .mode = IA_MODE_LATCH,
-      .state = IA_STATE_OFF,
-      .midi_chan = 10,
-      .midi_data0 = 80,
-      .midi_data1 = 0x7F,
-      .midi_data2 = 0,
-    },
-    {
-      .type = IA_TYPE_CC,
-      .mode = IA_MODE_TOGGLE,
-      .state = IA_STATE_OFF,
-      .midi_chan = 10,
-      .midi_data0 = 81,
-      .midi_data1 = 0x7F,
-      .midi_data2 = 0,
-    },
-    {
-      .type = IA_TYPE_CC,
-      .mode = IA_MODE_LATCH,
-      .state = IA_STATE_OFF,
-      .midi_chan = 10,
-      .midi_data0 = 82,
-      .midi_data1 = 0x7F,
-      .midi_data2 = 0,
-    },
-};
+
 
 /****************************************
  * Private functions prototypes
@@ -95,6 +46,7 @@ static ia_t ias[NUM_IA] = {
 
 static void ia_on (uint8_t nr);
 static void ia_off (uint8_t nr);
+static uint8_t ia_get_state(uint8_t nr);
 
 /****************************************
  * Public functions
@@ -103,26 +55,27 @@ static void ia_off (uint8_t nr);
  *
  */
 void preset_ia(uint8_t nr, uint8_t state) {
-  if(nr < NUM_IA) {
-    ia_t ia = ias[nr];
+  ia_t *ia = 0;
+  settings_get_ia(nr, &ia);
+  if(ia != 0) {
     if(state == 1) {
       // State on
-      if(ia.mode == IA_MODE_LATCH) {
-        if(ia.state == IA_STATE_OFF) {
+      if(ia->mode == IA_MODE_LATCH) {
+        if(ia_get_state(nr) == 0) {
           ia_on(nr);
         }
         else {
           ia_off(nr);
         }
       }
-      else if(ia.mode == IA_MODE_TOGGLE) {
+      else if(ia->mode == IA_MODE_TOGGLE) {
         ia_on(nr);
       }
       //
     }
     else {
       // State of
-      if(ia.mode == IA_MODE_TOGGLE) {
+      if(ia->mode == IA_MODE_TOGGLE) {
         ia_off(nr);
       }
     }
@@ -189,14 +142,37 @@ void preset_load_relativ(uint8_t nr) {
 /****************************************
  * Private functions
  ***************************************/
-static void ia_on (uint8_t nr) {
-
-  ias[nr].state = IA_STATE_ON;
-
-  if(ias[nr].type == IA_TYPE_CC) {
-      midi_send_cc(ias[nr].midi_chan, ias[nr].midi_data0, ias[nr].midi_data1);
+static uint8_t ia_get_state(uint8_t nr) {
+  uint8_t state = 0;
+  if( nr < 8 ) {
+      state = (preset_current.ia0_7 & (1<<nr)) != 0 ? 1:0;
     }
+    else if( nr < 16 ) {
+      state = (preset_current.ia8_15 & (1<< (nr - 8 ))) != 0 ? 1:0;
+    }
+    else if( nr < 24 ) {
+      state = (preset_current.ia16_23 & (1 << (nr - 16))) != 0 ? 1:0;
+    }
+  return state;
+}
 
+static void ia_on (uint8_t nr) {
+  if( nr < 8 ) {
+    preset_current.ia0_7 |= (1<<nr);
+  }
+  else if( nr < 16 ) {
+    preset_current.ia8_15 |= ( 1 << (nr - 8) );
+  }
+  else if( nr < 24 ) {
+    preset_current.ia16_23 |= ( 1 << (nr - 16) );
+  }
+  ia_t *ia = 0;
+  settings_get_ia(nr, &ia);
+  if(ia != 0) {
+    if(ia->type == IA_TYPE_CC) {
+        midi_send_cc(ia->midi_chan, ia->midi_data0, ia->midi_data1);
+      }
+  }
 
   // Debug
   char buf[16];
@@ -209,10 +185,23 @@ static void ia_on (uint8_t nr) {
 
 static void ia_off (uint8_t nr) {
 
-  ias[nr].state = IA_STATE_OFF;
-  if(ias[nr].type == IA_TYPE_CC) {
-    midi_send_cc(ias[nr].midi_chan, ias[nr].midi_data0, ias[nr].midi_data2);
+  if( nr < 8 ) {
+    preset_current.ia0_7 &= ~(1<<nr);
   }
+  else if( nr < 16 ) {
+    preset_current.ia8_15 &= ~( 1 << (nr - 8) );
+  }
+  else if( nr < 24 ) {
+    preset_current.ia16_23 &= ~( 1 << (nr - 16) );
+  }
+  ia_t *ia = 0;
+  settings_get_ia(nr, &ia);
+  if(ia != 0) {
+    if(ia->type == IA_TYPE_CC) {
+      midi_send_cc(ia->midi_chan, ia->midi_data0, ia->midi_data2);
+    }
+  }
+
   // Debug
   char buf[16];
   int num;
