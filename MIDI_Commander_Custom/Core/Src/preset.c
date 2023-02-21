@@ -51,11 +51,16 @@ static uint8_t ia_get_state(uint8_t nr);
 /****************************************
  * Public functions
  ***************************************/
+
+
+void preset_init() {
+  settings_init();
+}
 /*
  *
  */
 void preset_ia(uint8_t nr, uint8_t state) {
-  ia_t *ia = 0;
+  ia_t const*ia = 0;
   settings_get_ia(nr, &ia);
   if(ia != 0) {
     if(state == 1) {
@@ -166,7 +171,7 @@ static void ia_on (uint8_t nr) {
   else if( nr < 24 ) {
     preset_current.ia16_23 |= ( 1 << (nr - 16) );
   }
-  ia_t *ia = 0;
+  ia_t const*ia = 0;
   settings_get_ia(nr, &ia);
   if(ia != 0) {
     if(ia->type == IA_TYPE_CC) {
@@ -194,7 +199,7 @@ static void ia_off (uint8_t nr) {
   else if( nr < 24 ) {
     preset_current.ia16_23 &= ~( 1 << (nr - 16) );
   }
-  ia_t *ia = 0;
+  ia_t const*ia = 0;
   settings_get_ia(nr, &ia);
   if(ia != 0) {
     if(ia->type == IA_TYPE_CC) {

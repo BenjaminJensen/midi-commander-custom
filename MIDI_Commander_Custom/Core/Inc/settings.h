@@ -12,7 +12,7 @@
 // IA
 enum ia_mode_e {IA_MODE_LATCH, IA_MODE_TOGGLE};
 enum ia_state_e {IA_STATE_ON = 1, IA_STATE_OFF = 0};
-enum ia_type_e {IA_TYPE_PC, IA_TYPE_CC};
+enum ia_type_e {IA_TYPE_DISABLED = 0, IA_TYPE_PC, IA_TYPE_CC};
 /*
  * type CC / PC
  * mode 4[latch / toggle] 4[state]
@@ -31,7 +31,17 @@ typedef struct {
   uint8_t midi_data2;
 } ia_t;
 
+enum pc_mode_e {PC_MODE_DISABLED, PC_MODE_ON};
+typedef struct {
+  uint8_t pc;
+  enum pc_mode_e mode:4;
+  uint8_t chan:4;
+} pc_t;
 
-int settings_get_ia(uint8_t nr, ia_t **ia);
+/****************************************
+ * Public functions
+ ***************************************/
+int settings_get_ia(uint8_t nr, ia_t const**ia);
+void settings_init(void);
 
 #endif /* INC_SETTINGS_H_ */

@@ -24,6 +24,7 @@ static void event_handle_button(event_t e);
 
 void event_init() {
   fifo_init(&event_queue_handle, 0x1F,event_queue_data );
+  preset_init();
 }
 
 int event_put(event_t e) {
