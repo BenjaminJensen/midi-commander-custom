@@ -7,10 +7,14 @@
 
 #ifndef INC_DISPLAY_H_
 #define INC_DISPLAY_H_
+#include <stdint.h>
 
-void display_init(void);
-void display_setConfigName(void);
-void display_setBankName(uint8_t bankNumber);
-void display_disp_button(uint16_t b);
+typedef struct {
+  uint8_t pc[5];
+  uint8_t bank;
+} disp_preset_t;
 
+void display_init(I2C_HandleTypeDef *);
+void display_show_preset(disp_preset_t *preset);
+void display_update(void);
 #endif /* INC_DISPLAY_H_ */

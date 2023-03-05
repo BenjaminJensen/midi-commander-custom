@@ -192,7 +192,7 @@ int main(void)
   // Reset the USB interface in case it's still plugged in.
   HAL_GPIO_WritePin(USB_ID_GPIO_Port, USB_ID_Pin, GPIO_PIN_RESET);
 
-  display_init();
+  display_init(&hi2c1);
 
   // Check we've got a 256kB device, in case Melo switch to a smaller device at some point
   uint16_t flash_size = (*(uint16_t*)FLASHSIZE_BASE);

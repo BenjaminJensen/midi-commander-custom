@@ -22,6 +22,7 @@ EEPROM A2 line is tied low.
 
 I2C Display
 Address is 0x3C
+SH1106
 Is a ssd1306 - seems to work fine with this library:
 https://github.com/afiskon/stm32-ssd1306
 Could be 128x64

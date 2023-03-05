@@ -110,7 +110,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
-  ssd1306_tick();
+  //ssd1306_tick();
   systic_counter++;
   task_scheduler_update();
   /* USER CODE END SysTick_IRQn 1 */

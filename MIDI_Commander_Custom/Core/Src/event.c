@@ -54,6 +54,7 @@ void event_process() {
         SEGGER_RTT_WriteString(0, buf);
     }
   }
+  display_update();
 }
 
 
