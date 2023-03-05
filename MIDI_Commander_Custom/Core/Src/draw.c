@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "fontlibrary.h"
 
-#define DRAW_DEBUG
+//#define DRAW_DEBUG
 
 static draw_pixel_f draw_pixel = 0;
 static draw_fill_f draw_fill_ = 0;
@@ -19,7 +19,9 @@ static draw_fill_f draw_fill_ = 0;
 /****************************************
  * Private functions declarations
  ***************************************/
+#ifdef DRAW_DEBUG
 static void send_int(int i, char c);
+#endif
 static int draw_char_internal(char c, int x, int y, fontStyle_t *f, draw_pixel_f pixel_func) ;
 
 /****************************************
@@ -105,6 +107,7 @@ static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  draw_pixel_
 /****************************************
  * Private functions
  ***************************************/
+#ifdef DRAW_DEBUG
 static void send_int(int i, char c) {
   char buf[8];
   buf[0] = c;
@@ -114,3 +117,4 @@ static void send_int(int i, char c) {
   buf[size+3] = 0;
   SEGGER_RTT_WriteString(0, buf);
 }
+#endif
