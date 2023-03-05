@@ -70,7 +70,7 @@ uint8_t ssd1306_Init(I2C_HandleTypeDef *hi2c)
     }
 
     // Clear screen
-    ssd1306_Fill(Black);
+    ssd1306_Fill(SSD1306_Black);
 
     // Flush buffer to screen
     ssd1306_UpdateScreen(hi2c);
@@ -94,7 +94,7 @@ void ssd1306_Fill(SSD1306_COLOR color)
 
     for(i = 0; i < sizeof(SSD1306_Buffer); i++)
     {
-        SSD1306_Buffer[i] = (color == Black) ? 0x00 : 0xFF;
+        SSD1306_Buffer[i] = (color == SSD1306_Black) ? 0x00 : 0xFF;
     }
 }
 
@@ -104,14 +104,12 @@ void ssd1306_Fill(SSD1306_COLOR color)
 void ssd1306_UpdateScreen(I2C_HandleTypeDef *hi2c)
 {
     uint8_t i;
-    uint8_t tmp[128] = {0x00};
     for (i = 0; i < 8; i++) {
         ssd1306_WriteCommand(hi2c, 0xB0 + i);
         ssd1306_WriteCommand(hi2c, 0x02);
         ssd1306_WriteCommand(hi2c, 0x10);
 
         HAL_I2C_Mem_Write(hi2c, SSD1306_I2C_ADDR, 0x40, 1, &SSD1306_Buffer[SSD1306_WIDTH * i], SSD1306_WIDTH, 100);
-        //HAL_I2C_Mem_Write(hi2c, SSD1306_I2C_ADDR, 0x40, 1, tmp, SSD1306_WIDTH, 100);
     }
 }
 
@@ -136,7 +134,7 @@ void ssd1306_DrawPixel(uint8_t x, uint8_t y, SSD1306_COLOR color)
     }
 
     // Draw in the correct color
-    if (color == White)
+    if (color == SSD1306_White)
     {
         SSD1306_Buffer[x + (y / 8) * SSD1306_WIDTH] |= 1 << (y % 8);
     }

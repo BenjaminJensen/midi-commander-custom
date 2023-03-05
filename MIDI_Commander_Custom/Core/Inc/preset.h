@@ -15,5 +15,6 @@ void preset_bank_up(void);
 void preset_bank_down(void);
 void preset_load_relativ(uint8_t nr);
 void preset_init(void);
+void preset_update_display(void);
 
 #endif /* INC_PRESET_H_ */

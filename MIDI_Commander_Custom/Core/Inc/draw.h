@@ -7,10 +7,18 @@
 
 #ifndef INC_DRAW_H_
 #define INC_DRAW_H_
+//
+//  Enumeration for screen colors
+//
+typedef enum {
+    Black = 0x00,   // Black color, no pixel
+    White = 0x01,   // Pixel is set. Color depends on LCD
+} draw_color_e;
 
-
-typedef void (*font_draw_pixel_f)(int x, int y);
-void draw_set_pixel_function(font_draw_pixel_f f);
+typedef void (*draw_pixel_f)(int x, int y);
+typedef void (*draw_fill_f)(int color);
+void draw_set_pixel_function(draw_pixel_f f);
+void draw_set_fill_function(draw_fill_f f);
 int draw_char(char c, int x, int y);
-
+int draw_fill(draw_color_e color);
 #endif /* INC_DRAW_H_ */

@@ -9,7 +9,7 @@
 #include "event.h"
 #include "fifo.h"
 #include "preset.h"
-
+#include "display.h"
 #include "SEGGER_RTT.h"
 
 static fifo_handler_t event_queue_handle;
@@ -125,6 +125,7 @@ static void event_handle_button_preset(event_t e) {
     default:
       break;
   }
+  preset_update_display();
 }
 
 static void event_handle_button(event_t e) {

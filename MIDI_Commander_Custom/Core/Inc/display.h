@@ -8,6 +8,7 @@
 #ifndef INC_DISPLAY_H_
 #define INC_DISPLAY_H_
 #include <stdint.h>
+#include "stm32f1xx_hal.h"
 
 typedef struct {
   uint8_t pc[5];

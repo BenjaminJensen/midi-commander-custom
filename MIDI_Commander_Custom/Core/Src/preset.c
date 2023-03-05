@@ -10,6 +10,7 @@
 #include "settings.h"
 #include <stdio.h>
 #include "SEGGER_RTT.h"
+#include "display.h"
 
 /****************************************
  * Private types and variables
@@ -51,7 +52,16 @@ static uint8_t ia_get_state(uint8_t nr);
 /****************************************
  * Public functions
  ***************************************/
-
+void preset_update_display() {
+  disp_preset_t p;
+  p.bank = preset_bank_current;
+  p.pc[0] = 2;
+  p.pc[1] = 77;
+  p.pc[2] = 88;
+  p.pc[3] = 99;
+  p.pc[4] = 101;
+  display_show_preset(&p);
+}
 
 void preset_init() {
   settings_init();

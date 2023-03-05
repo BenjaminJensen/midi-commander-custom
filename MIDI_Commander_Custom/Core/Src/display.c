@@ -41,12 +41,13 @@ void display_init(I2C_HandleTypeDef *hi2c1){
   hi2c1_ = hi2c1;
   ssd1306_Init(hi2c1);
   draw_set_pixel_function(&draw_pixel_wrapper);
+  draw_set_fill_function(&ssd1306_Fill);
 
   //display_test();
   //ssd1306_UpdateScreen(hi2c1);
   disp_preset_t p = {
       .pc = {1,22,33,44,115},
-      .bank = 0,
+      .bank = 23,
   };
   display_show_preset(&p);
   display_update();
@@ -59,24 +60,29 @@ void display_init(I2C_HandleTypeDef *hi2c1){
 void display_show_preset(disp_preset_t *preset) {
   char buf[6];
 
+  draw_fill(Black);
+  // Write PC numbers to display
   for(int i = 0; i < 5; i++) {
     ssd1306_SetCursor(1, 2 + (i * 12));
     display_prep_line(buf, i, preset->pc[i]);
     ssd1306_WriteString(buf, Font_7x10, White);
   }
-  // Vertical seperator line
+
+  // Vertical separator line
   for(int i = 0; i < 64; i++)
     ssd1306_DrawPixel(38, i, White);
 
-  buf[0] = '0';
-  buf[1] = '0';
-  buf[2] = 0;
-
-  ssd1306_SetCursor(40, (64-26)/2);
-  //ssd1306_WriteString(buf, Font_16x26, White);
-
-  draw_char('0', 42, 0);
-  draw_char('1', 83, 0);
+  // Write bank display
+  if(preset->bank < 10) {
+    draw_char('0', 42, 0);
+    draw_char('0' + preset->bank, 83, 0);
+  }
+  else {
+    char buf[4];
+    sprintf(buf, "%d", preset->bank);
+    draw_char(buf[0] , 42, 0);
+    draw_char(buf[1] , 83, 0);
+  }
   need_update = 1;
 }
 

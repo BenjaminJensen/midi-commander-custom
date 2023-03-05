@@ -38,8 +38,8 @@
 //  Enumeration for screen colors
 //
 typedef enum {
-    Black = 0x00,   // Black color, no pixel
-    White = 0x01,   // Pixel is set. Color depends on LCD
+  SSD1306_Black = 0x00,   // Black color, no pixel
+  SSD1306_White = 0x01,   // Pixel is set. Color depends on LCD
 } SSD1306_COLOR;
 
 //

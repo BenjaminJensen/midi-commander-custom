@@ -13,19 +13,40 @@
 
 #define DRAW_DEBUG
 
-static font_draw_pixel_f draw_pixel = 0;
+static draw_pixel_f draw_pixel = 0;
+static draw_fill_f draw_fill_ = 0;
 
 /****************************************
  * Private functions declarations
  ***************************************/
 static void send_int(int i, char c);
-static int draw_char_internal(char c, int x, int y, fontStyle_t *f, font_draw_pixel_f pixel_func) ;
+static int draw_char_internal(char c, int x, int y, fontStyle_t *f, draw_pixel_f pixel_func) ;
 
 /****************************************
  * Public functions
  ***************************************/
-void draw_set_pixel_function(font_draw_pixel_f f) {
+/*
+ *
+ */
+int draw_fill(draw_color_e color) {
+  if(draw_fill_ != 0) {
+    draw_fill_(color);
+  }
+
+  return 0;
+}
+/*
+ *
+ */
+void draw_set_pixel_function(draw_pixel_f f) {
   draw_pixel = f;
+}
+/*
+ *
+ */
+
+void draw_set_fill_function(draw_fill_f f) {
+  draw_fill_ = f;
 }
 /*
  * @brief Draw a character to screen buffer
@@ -36,7 +57,7 @@ int draw_char(char c, int x, int y) {
  return 0;
 }
 
-static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  font_draw_pixel_f pixel_func) {
+static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  draw_pixel_f pixel_func) {
 #ifdef DRAW_DEBUG
   char bufc;
   SEGGER_RTT_WriteString(0, "Draw character\n");
