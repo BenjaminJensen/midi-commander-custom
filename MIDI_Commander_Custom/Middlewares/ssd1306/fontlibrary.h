@@ -19,8 +19,6 @@ typedef struct
     uint8_t const *GlyphBitmaps;
 } fontStyle_t;
 
-typedef void (*font_draw_fixel)(int x, int y);
-int font_draw_char(char c, int x, int y, font_draw_fixel pixel_func);
 extern fontStyle_t FontStyle_robot56;
 
 #endif /* FONTLIBRARY_H_ */

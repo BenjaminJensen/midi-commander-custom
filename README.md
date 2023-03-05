@@ -2,7 +2,7 @@
 Custom Firmware for the MeloAudio Midi Commander / Harley Benton MP100
 Forked from the harvie256/midi-commander-custom, where a log of good work has been done on the hardware side.
 
-However as I am a guitarist I needed a more old-school solotion alla Bradshaw / Rocktron controllers like the CAE RS10 / Rocktron Midi-Mate, where you have bankc of Program Change and Controller Change, with easy acces to Instant Access Switches for a pedalboard expierence.
+However as I am a guitarist I needed a more old-school solotion alla Bradshaw / Rocktron controllers like the CAE RS10 / Rocktron Midi-Mate, where you have banks of Program Change and Controller Change, with easy acces to Instant Access Switches for a pedalboard expierence.
 
 
 # Build status

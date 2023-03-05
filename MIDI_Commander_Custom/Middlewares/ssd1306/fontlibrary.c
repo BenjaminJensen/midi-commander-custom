@@ -6,8 +6,6 @@
 #include <stdint.h>
 #include "fontlibrary.h"
 
-#include "SEGGER_RTT.h"
-#include <stdio.h>
 static uint8_t const robot56_Bitmaps[3480] =
 {
     // ASCII: 48, char width: 43
@@ -627,50 +625,3 @@ fontStyle_t FontStyle_robot56 =
     robot56_Widths,
     robot56_Bitmaps
 };
-static void send_int(int i, char c) {
-  char buf[8];
-  buf[0] = c;
-  buf[1] = ':';
-  int size = sprintf(&buf[2], "%d", i);
-  buf[size+2] = '\n';
-  buf[size+3] = 0;
-  SEGGER_RTT_WriteString(0, buf);
-}
-int font_draw_char(char c, int x, int y, font_draw_fixel pixel_func) {
-  char bufc = 0;
-  char buf[8];
-  buf[0] = 'd';
-  buf[1] = 's';
-  buf[2] = ':';
-  buf[3] = c;
-  buf[4] = '\n';
-  buf[5] = 0;
-  SEGGER_RTT_WriteString(0, buf);
-  fontStyle_t *f = &FontStyle_robot56;
-  if(c >= f->FirstAsciiCode && c <= (f->FirstAsciiCode + f->GlyphCount)) {
-    //
-    int index = (c - f->FirstAsciiCode)*f->GlyphBytesWidth*f->GlyphHeight;
-    send_int(index, 'i');
-    // Outer loop height
-    for(int h = 0; h < f->GlyphHeight; h++) {
-      // Inner loop width
-      for(int w = 0; w < f->GlyphBytesWidth; w++) {
-        char pixel = 0;
-        // Inner inner loop byte
-        for(int b = 0; b < 8; b++) {
-          int i = index + h * f->GlyphBytesWidth + w;
-          pixel = (f->GlyphBitmaps[i] & (0x80 >> b)) != 0 ? 1: 0;
-          if(pixel != 0) {
-            pixel_func(w*8 + b + x, h + y);
-          }
-          bufc = '0'+pixel;
-          SEGGER_RTT_Write(0, &bufc, 1);
-        } // Inner loop byte
-      }// Inner loop width
-      bufc = '\n';
-      SEGGER_RTT_Write(0, &bufc, 1);
-    }// Outer loop height
-  }// If
-
-  return 0;
-}

@@ -268,17 +268,5 @@ void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR 
     }
   }
 }
-/*
- *
- */
-static void draw_pixel_wrapper(int x, int y) {
-  ssd1306_DrawPixel(x, y, White);
-}
-/*
- *
- */
-int draw_char(char c, int x, int y) {
- font_draw_char(c, x, y, &draw_pixel_wrapper);
 
- return 0;
-}
+

@@ -9,16 +9,18 @@
 #include <string.h>
 #include <stdio.h>
 #include "ssd1306.h"
-#include "sh1106.h"
 #include "display.h"
+#include "draw.h"
+
 static uint8_t need_update = 0;
 static I2C_HandleTypeDef *hi2c1_;
 
+/****************************************
+ * Private functions declarations
+ ***************************************/
 static void display_test() ;
-
 static void display_prep_line(char *buf, uint8_t line, uint8_t pc);
-
-
+static void draw_pixel_wrapper(int x, int y);
 
 /****************************************
  * Public functions
@@ -37,16 +39,17 @@ void display_update() {
  */
 void display_init(I2C_HandleTypeDef *hi2c1){
   hi2c1_ = hi2c1;
-    ssd1306_Init(hi2c1);
+  ssd1306_Init(hi2c1);
+  draw_set_pixel_function(&draw_pixel_wrapper);
 
-    //display_test();
-    //ssd1306_UpdateScreen(hi2c1);
-    disp_preset_t p = {
-        .pc = {1,22,33,44,115},
-        .bank = 0,
-    };
-    display_show_preset(&p);
-    display_update();
+  //display_test();
+  //ssd1306_UpdateScreen(hi2c1);
+  disp_preset_t p = {
+      .pc = {1,22,33,44,115},
+      .bank = 0,
+  };
+  display_show_preset(&p);
+  display_update();
 }
 
 /*
@@ -80,6 +83,15 @@ void display_show_preset(disp_preset_t *preset) {
 /****************************************
  * Private functions
  ***************************************/
+/*
+ *
+ */
+static void draw_pixel_wrapper(int x, int y) {
+  ssd1306_DrawPixel(x, y, White);
+}
+/*
+ *
+ */
 static void display_prep_line(char *buf, uint8_t line, uint8_t pc) {
   int indent = 0;
   buf[indent++] = '0' + line;
