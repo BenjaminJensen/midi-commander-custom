@@ -31,7 +31,6 @@
 #include "leds.h"
 #include "uart.h"
 #include "app.h"
-#include "event.h"
 #include "SEGGER_RTT.h"
 
 /* USER CODE END Includes */
@@ -48,7 +47,47 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+  static int settings_load_preset(int nr) {
+    //0x5X
+    uint8_t data[8] = {0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7 };
+    uint8_t rec[8] = {0};
 
+    /* Peripheral clock enable */
+    __HAL_RCC_I2C1_CLK_ENABLE();
+
+    I2C_HandleTypeDef hi2c_handle;
+    hi2c_handle.Instance = I2C1;
+    hi2c_handle.Init.ClockSpeed = 300*1000;
+    hi2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
+    hi2c_handle.Init.OwnAddress1 = 0;
+    hi2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hi2c_handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c_handle.Init.OwnAddress2 = 0;
+    hi2c_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c_handle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+    if (HAL_I2C_Init(&hi2c_handle) != HAL_OK)
+    {
+      SEGGER_RTT_WriteString(0, "Settings: Unable to initialize I2C!\n");
+    }
+    uint8_t ctrl_addr = 0xA0;
+
+    for(int i = 0; i < 8; i++) {
+      uint8_t ctrl = ctrl_addr | 0x0; // Write
+      HAL_I2C_Mem_Write(&hi2c_handle, ctrl, i, 1, &data[i], 1, 10);
+      HAL_Delay(5);
+    }
+
+    char buf[64];
+    int size = 0;
+    for(int i = 0; i < 8; i++) {
+      uint8_t ctrl = ctrl_addr | 0x1; // Read
+      HAL_I2C_Mem_Read(&hi2c_handle, ctrl, i, 1, &rec[i], 1, 10);
+      size = sprintf(buf, "w:%x r:%x\n", data[i], rec[i]);
+      buf[size] = 0;
+      SEGGER_RTT_WriteString(0, buf);
+    }
+    return 0;
+  }
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -179,6 +218,8 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+
+settings_load_preset(0);
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
@@ -214,12 +255,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   app_init();
-  event_init();
   while (1)
   {
 	  //handle_switches();
     app_run();
-    event_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

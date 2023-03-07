@@ -9,7 +9,8 @@
 #include "stm32f1xx_it.h"
 #include "scheduler.h"
 #include "fifo.h"
-
+#include "event.h"
+#include "preset.h"
 #include "SEGGER_RTT.h"
 
 static task_tcb_t task1_tcb;
@@ -22,6 +23,9 @@ static void task1(void);
 static void task2(void);
 
 void app_init() {
+
+  event_init();
+  preset_init();
 
   fifo_init(&event_queue_handle, 0x1F,event_queue_data );
 
@@ -40,6 +44,7 @@ void app_run() {
   // scan buttons 10ms
 
   // process events
+  event_process();
 }
 
 static void task1(void) {

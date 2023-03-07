@@ -8,25 +8,56 @@
 #include <stdio.h>
 #include "event.h"
 #include "fifo.h"
-#include "preset.h"
 #include "display.h"
 #include "SEGGER_RTT.h"
 
+/****************************************
+ * Local variables
+ ***************************************/
+typedef struct {
+  enum event_type_e type;
+  event_handler_f fp;
+} event_handler_t;
+
 static fifo_handler_t event_queue_handle;
 static uint32_t event_queue_data[32];
-
 enum system_mode_e {MODE_PRESET, MODE_IA0, MODE_IA1};
-
 static enum system_mode_e system_mode = MODE_PRESET;
+#define EVENT_NUM_HANDLERS (8)
+static const int event_max_handlers = EVENT_NUM_HANDLERS;
+static int event_num_handlers = -1;
+static event_handler_t event_handlers[EVENT_NUM_HANDLERS] = {0};
 
-
-static void event_handle_button(event_t e);
-
+/****************************************
+ * Public functions
+ ***************************************/
+/*
+ *
+ */
 void event_init() {
   fifo_init(&event_queue_handle, 0x1F,event_queue_data );
-  preset_init();
 }
+/*
+ *
+ */
+int event_handler_register(enum event_type_e e, event_handler_f fp) {
+  int error = -1;
 
+  // -1 == none, move to first slot
+  if(event_num_handlers == -1)
+    event_num_handlers = 0;
+
+  if(event_num_handlers < event_max_handlers) {
+    event_handlers[event_num_handlers].type = e;
+    event_handlers[event_num_handlers].fp = fp;
+    event_num_handlers++;
+    error = 0;
+  }
+  return error;
+}
+/*
+ *
+ */
 int event_put(event_t e) {
   int error = 0;
 
@@ -37,100 +68,20 @@ int event_put(event_t e) {
 }
 
 void event_process() {
-  char buf[32];
-  int num;
 
   event_t e;
   while(fifo_get(&event_queue_handle, &e.data) == FIFO_OK) {
-    switch(e.event.type) {
-      case EVENT_BUTTON_PRESS:
-      case EVENT_BUTTON_RELEASE:
-      case EVENT_BUTTON_LONG:
-        event_handle_button(e);
-        break;
-      default:
-        num = sprintf(buf, "Unknown event %d, %d, %d, %d\r\n", e.event.type, e.event.data0, e.event.data2, e.event.data2);
-        buf[num] = 0;
-        SEGGER_RTT_WriteString(0, buf);
+    // Any handlers registered?
+    if(event_num_handlers > 0) {
+      // Loop through event handlers
+      for(int i = 0; i < event_num_handlers; i++) {
+        // Call event handlers for the given event type
+        if(event_handlers[i].type == e.event.type) {
+          event_handlers[i].fp(e);
+        }
+      }
     }
   }
+  // Send display buffer to display after proccessing events
   display_update();
 }
-
-
-
-
-
-static void event_handle_button_preset(event_t e) {
-  switch(e.event.data0) {
-    case 0:
-      if(system_mode == MODE_PRESET) {
-        system_mode = MODE_IA0;
-      }
-      break;
-    case 1:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(0, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(0, 0);
-      }
-      break;
-    case 2:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(1, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(1, 0);
-      }
-      break;
-    case 3:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(2, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(2, 0);
-      }
-      break;
-    case 4:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_bank_up();
-      }
-      break;
-    case 5:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(0);
-      }
-      break;
-    case 6:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(1);
-      }
-      break;
-    case 7:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(2);
-      }
-      break;
-    case 8:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(3);
-      }
-      break;
-    case 9:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_bank_down();
-      }
-      break;
-    default:
-      break;
-  }
-  preset_update_display();
-}
-
-static void event_handle_button(event_t e) {
-  if(system_mode == MODE_PRESET) {
-    event_handle_button_preset(e);
-  }
-}
-

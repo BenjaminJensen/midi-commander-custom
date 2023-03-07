@@ -17,12 +17,13 @@ That makes it a STM32F103RET
 
 * I2C *
 Clock speed about 360kHz
-I2C EEPROM - 24C08 - Address is 0x5X where the X is the addressing nibble.
+I2C EEPROM - 24C08 - https://ww1.microchip.com/downloads/en/devicedoc/21081G.pdf
+No adressing as such 0xA as the high nibble of command byte and 4 first pages enabled
 EEPROM A2 line is tied low.
 
 I2C Display
 Address is 0x3C
-SH1106
+SSD1306 or maybe SH1106
 Is a ssd1306 - seems to work fine with this library:
 https://github.com/afiskon/stm32-ssd1306
 Could be 128x64
@@ -32,6 +33,7 @@ Could be 128x64
     // Max Y: 63
 
 For the EEPROM, only the first 128 bytes appear to have anything in them.  This leaves 896 bytes free, starting at the 128 byte offset.
+
 Expression pedals are on:
 EXP1 PA7
 EXP2 PB0

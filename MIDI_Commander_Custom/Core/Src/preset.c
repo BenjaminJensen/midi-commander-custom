@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "SEGGER_RTT.h"
 #include "display.h"
+#include "event.h"
 
 /****************************************
  * Private types and variables
@@ -34,11 +35,10 @@ static preset_t preset_current = {0};
 static uint8_t preset_number_current = 0;
 static uint8_t preset_bank_current = 0;
 
+enum preset_state_e {PS_PRESET, PS_IA0, PS_IA1, PS_IA2, PS_BANK};
+static enum preset_state_e preset_state = PS_PRESET;
 
 
-/****************************************
- * Private functions
- ***************************************/
 
 
 /****************************************
@@ -48,11 +48,31 @@ static uint8_t preset_bank_current = 0;
 static void ia_on (uint8_t nr);
 static void ia_off (uint8_t nr);
 static uint8_t ia_get_state(uint8_t nr);
+static int preset_process_event(event_t e);
+static void preset_handle_preset(event_t e);
+
+static void preset_ia(uint8_t nr, uint8_t state);
+static void preset_bank_up(void);
+static void preset_bank_down(void);
+static void preset_load_relativ(uint8_t nr);
+static void preset_update_display(void);
 
 /****************************************
  * Public functions
  ***************************************/
-void preset_update_display() {
+/*
+ * @brief Initializes the preset module and registers all event handlers
+ */
+void preset_init() {
+  settings_init();
+  event_handler_register(EVENT_BUTTON_PRESS, &preset_process_event);
+  event_handler_register(EVENT_BUTTON_RELEASE, &preset_process_event);
+}
+
+/****************************************
+ * Private functions
+ ***************************************/
+static void preset_update_display() {
   disp_preset_t p;
   p.bank = preset_bank_current;
   p.pc[0] = 2;
@@ -63,13 +83,100 @@ void preset_update_display() {
   display_show_preset(&p);
 }
 
-void preset_init() {
-  settings_init();
+/*
+ * @brief Event handler for all button events
+ */
+static int preset_process_event(event_t e) {
+
+  switch(preset_state) {
+    case PS_PRESET:
+      preset_handle_preset(e);
+      break;
+    case PS_IA0:
+      break;
+    case PS_IA1:
+      break;
+    case PS_IA2:
+      break;
+    case PS_BANK:
+      break;
+    default:
+      break;
+  }
+
+  return 0;
 }
 /*
  *
  */
-void preset_ia(uint8_t nr, uint8_t state) {
+static void preset_handle_preset(event_t e) {
+  switch(e.event.data0) {
+    case 0:
+      // Do page changes here
+      break;
+    case 1:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(0, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(0, 0);
+      }
+      break;
+    case 2:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(1, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(1, 0);
+      }
+      break;
+    case 3:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(2, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(2, 0);
+      }
+      break;
+    case 4:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_up();
+      }
+      break;
+    case 5:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(0);
+      }
+      break;
+    case 6:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(1);
+      }
+      break;
+    case 7:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(2);
+      }
+      break;
+    case 8:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(3);
+      }
+      break;
+    case 9:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_down();
+      }
+      break;
+    default:
+      break;
+  }
+  preset_update_display();
+}
+/*
+ *
+ */
+static void preset_ia(uint8_t nr, uint8_t state) {
   ia_t const*ia = 0;
   settings_get_ia(nr, &ia);
   if(ia != 0) {
@@ -100,7 +207,7 @@ void preset_ia(uint8_t nr, uint8_t state) {
 /*
  *  @brief Increases "bank" with one
  */
-void preset_bank_up() {
+static void preset_bank_up() {
   if(preset_bank_current == (preset_bank_max - 1)) {
     preset_bank_current = 0;
   }
@@ -120,7 +227,7 @@ void preset_bank_up() {
 /*
  * @brief Decreases "bank" with one
  */
-void preset_bank_down() {
+static void preset_bank_down() {
   if(preset_bank_current == 0) {
     preset_bank_current = preset_bank_max - 1;
   }
@@ -140,7 +247,7 @@ void preset_bank_down() {
 /*
  * @brief Loads preset relative to current "bank"
  */
-void preset_load_relativ(uint8_t nr) {
+static void preset_load_relativ(uint8_t nr) {
   uint8_t new_preset = 0;
   if(nr < preset_pr_bank) {
     new_preset = (preset_bank_current * preset_pr_bank) + nr;

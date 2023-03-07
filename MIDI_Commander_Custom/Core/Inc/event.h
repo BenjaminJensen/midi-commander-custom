@@ -23,9 +23,11 @@ typedef union {
   uint32_t data;
   event_struct_t event;
 } event_t;
+typedef int (*event_handler_f)(event_t e);
 
 void event_init(void);
 void event_process(void);
 int event_put(event_t e);
+int event_handler_register(enum event_type_e e, event_handler_f fp);
 
 #endif /* INC_EVENT_H_ */
