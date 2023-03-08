@@ -78,7 +78,6 @@ void display_show_preset(disp_preset_t *preset) {
     draw_char('0' + preset->bank, 83, 0);
   }
   else {
-    char buf[4];
     sprintf(buf, "%d", preset->bank);
     draw_char(buf[0] , 42, 0);
     draw_char(buf[1] , 83, 0);
@@ -86,6 +85,25 @@ void display_show_preset(disp_preset_t *preset) {
   need_update = 1;
 }
 
+void display_bank_display(int bank) {
+  char buf[4];
+  draw_fill(Black);
+ // 43 * 2 = 86
+ // 128 - 86 = 42 / 2 = 21
+  // char0=21, char1=21+43=54
+  // Write bank display
+
+  if(bank < 10) {
+    draw_char('0', 21, 0);
+    draw_char('0' + bank, 53, 0);
+  }
+  else {
+    sprintf(buf, "%d", bank);
+    draw_char(buf[0] , 21, 0);
+    draw_char(buf[1] , 53, 0);
+  }
+  need_update = 1;
+}
 /****************************************
  * Private functions
  ***************************************/

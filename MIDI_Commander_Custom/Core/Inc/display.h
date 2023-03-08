@@ -18,4 +18,6 @@ typedef struct {
 void display_init(I2C_HandleTypeDef *);
 void display_show_preset(disp_preset_t *preset);
 void display_update(void);
+void display_bank_display(int bank);
+
 #endif /* INC_DISPLAY_H_ */

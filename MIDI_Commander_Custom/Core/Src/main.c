@@ -47,47 +47,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-  static int settings_load_preset(int nr) {
-    //0x5X
-    uint8_t data[8] = {0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7 };
-    uint8_t rec[8] = {0};
 
-    /* Peripheral clock enable */
-    __HAL_RCC_I2C1_CLK_ENABLE();
-
-    I2C_HandleTypeDef hi2c_handle;
-    hi2c_handle.Instance = I2C1;
-    hi2c_handle.Init.ClockSpeed = 300*1000;
-    hi2c_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
-    hi2c_handle.Init.OwnAddress1 = 0;
-    hi2c_handle.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-    hi2c_handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-    hi2c_handle.Init.OwnAddress2 = 0;
-    hi2c_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-    hi2c_handle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-    if (HAL_I2C_Init(&hi2c_handle) != HAL_OK)
-    {
-      SEGGER_RTT_WriteString(0, "Settings: Unable to initialize I2C!\n");
-    }
-    uint8_t ctrl_addr = 0xA0;
-
-    for(int i = 0; i < 8; i++) {
-      uint8_t ctrl = ctrl_addr | 0x0; // Write
-      HAL_I2C_Mem_Write(&hi2c_handle, ctrl, i, 1, &data[i], 1, 10);
-      HAL_Delay(5);
-    }
-
-    char buf[64];
-    int size = 0;
-    for(int i = 0; i < 8; i++) {
-      uint8_t ctrl = ctrl_addr | 0x1; // Read
-      HAL_I2C_Mem_Read(&hi2c_handle, ctrl, i, 1, &rec[i], 1, 10);
-      size = sprintf(buf, "w:%x r:%x\n", data[i], rec[i]);
-      buf[size] = 0;
-      SEGGER_RTT_WriteString(0, buf);
-    }
-    return 0;
-  }
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -111,37 +71,7 @@ static void MX_TIM2_Init(TIM_HandleTypeDef *handler);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*
-static void send_midi(uint8_t but, uint8_t state) {
-  uint8_t cc = 0;
 
-  switch(but) {
-    case 0:
-      cc = 80;
-      break;
-    case 1:
-      cc = 81;
-      break;
-    case 2:
-      cc = 82;
-      break;
-    default:
-      cc = but;
-      break;
-  }
-
-  uart_putc(0xB0); // CC chan 0
-  uart_putc(cc); // CC nr
-  if(state == 0) {
-    uart_putc(0x00); // value
-  }
-  else {
-    uart_putc(0x7f); // value
-
-  }
-
-}
-*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	static uint16_t b_state = 0;
@@ -150,41 +80,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	// Update leds
   led_update_task();
 
-  /*
- static uint8_t cnt = 0;
-  static uint16_t b_state_old = 0;
-  char rtt_buf[10] = "But0,s0\r\n\0";
-
-	if(b_state != b_state_old) {
-	 for(int i = 0; i <10; i++) {
-	   if((b_state & (1 << i)) != (b_state_old & (1 << i))) {
-	     rtt_buf[3] = '0' + i;
-	     if(b_state & (1 << i)) {
-        leds_set_led(i, LED_ON);
-        send_midi(i, 1);
-        rtt_buf[6] = '1';
-        SEGGER_RTT_WriteString(0, rtt_buf);
-       }
-       else {
-        leds_set_led(i, LED_OFF);
-        send_midi(i, 0);
-        rtt_buf[6] = '0';
-        SEGGER_RTT_WriteString(0, rtt_buf);
-       }
-	   }
-	 } // for loop
-
-   b_state_old = b_state;
-	}
-
-	// update display
-	cnt++;
-	if(cnt > 4) {
-	 cnt = 0;
-	 b_state_old = b_state;
-		display_disp_button(b_state);
-	}
-  */
 }
 
 /* USER CODE END 0 */
@@ -219,7 +114,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
 
-settings_load_preset(0);
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();

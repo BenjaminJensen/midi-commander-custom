@@ -34,12 +34,10 @@ static const uint8_t preset_bank_max = 32; // 32 banks of 4 presets, total 128 p
 static preset_t preset_current = {0};
 static uint8_t preset_number_current = 0;
 static uint8_t preset_bank_current = 0;
+static uint8_t preset_bank_next = 0;
 
 enum preset_state_e {PS_PRESET, PS_IA0, PS_IA1, PS_IA2, PS_BANK};
 static enum preset_state_e preset_state = PS_PRESET;
-
-
-
 
 /****************************************
  * Private functions prototypes
@@ -56,6 +54,8 @@ static void preset_bank_up(void);
 static void preset_bank_down(void);
 static void preset_load_relativ(uint8_t nr);
 static void preset_update_display(void);
+static void preset_bank_display(int bank);
+static void preset_handle_bank(event_t e);
 
 /****************************************
  * Public functions
@@ -72,6 +72,9 @@ void preset_init() {
 /****************************************
  * Private functions
  ***************************************/
+/*
+ *
+ */
 static void preset_update_display() {
   disp_preset_t p;
   p.bank = preset_bank_current;
@@ -82,12 +85,15 @@ static void preset_update_display() {
   p.pc[4] = 101;
   display_show_preset(&p);
 }
-
+static void preset_bank_display(int bank) {
+  display_bank_display(bank);
+}
 /*
  * @brief Event handler for all button events
  */
 static int preset_process_event(event_t e) {
 
+  // Handle button presses
   switch(preset_state) {
     case PS_PRESET:
       preset_handle_preset(e);
@@ -99,10 +105,29 @@ static int preset_process_event(event_t e) {
     case PS_IA2:
       break;
     case PS_BANK:
+      preset_handle_bank(e);
       break;
     default:
       break;
   }
+
+  // Show resulting state
+  switch(preset_state) {
+     case PS_PRESET:
+       preset_update_display();
+       break;
+     case PS_IA0:
+       break;
+     case PS_IA1:
+       break;
+     case PS_IA2:
+       break;
+     case PS_BANK:
+       preset_bank_display(preset_bank_next);
+       break;
+     default:
+       break;
+   }
 
   return 0;
 }
@@ -171,7 +196,42 @@ static void preset_handle_preset(event_t e) {
     default:
       break;
   }
-  preset_update_display();
+}
+static void preset_handle_bank(event_t e) {
+  switch(e.event.data0) {
+    case 4:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_up();
+      }
+      break;
+    case 5:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(0);
+      }
+      break;
+    case 6:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(1);
+      }
+      break;
+    case 7:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(2);
+      }
+      break;
+    case 8:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_load_relativ(3);
+      }
+      break;
+    case 9:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_bank_down();
+      }
+      break;
+    default:
+      break;
+  }
 }
 /*
  *
@@ -208,18 +268,25 @@ static void preset_ia(uint8_t nr, uint8_t state) {
  *  @brief Increases "bank" with one
  */
 static void preset_bank_up() {
-  if(preset_bank_current == (preset_bank_max - 1)) {
-    preset_bank_current = 0;
+  if(preset_bank_next == (preset_bank_max - 1)) {
+    preset_bank_next = 0;
   }
   else {
-    preset_bank_current++;
+    preset_bank_next++;
+  }
+
+  if(preset_bank_current == preset_bank_next) {
+    preset_state = PS_PRESET;
+  }
+  else {
+    preset_state = PS_BANK;
   }
 
   // Debug
-  char buf[16];
+  char buf[32];
   int num;
 
-  num = sprintf(buf, "Bank up(%d)\r\n", preset_bank_current);
+  num = sprintf(buf, "Bank up c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
   buf[num] = 0;
   SEGGER_RTT_WriteString(0, buf);
 }
@@ -228,18 +295,25 @@ static void preset_bank_up() {
  * @brief Decreases "bank" with one
  */
 static void preset_bank_down() {
-  if(preset_bank_current == 0) {
-    preset_bank_current = preset_bank_max - 1;
+  if(preset_bank_next == 0) {
+    preset_bank_next = preset_bank_max - 1;
   }
   else {
-    preset_bank_current--;
+    preset_bank_next--;
+  }
+
+  if(preset_bank_current == preset_bank_next) {
+    preset_state = PS_PRESET;
+  }
+  else {
+    preset_state = PS_BANK;
   }
 
   // Debug
-  char buf[16];
+  char buf[32];
   int num;
 
-  num = sprintf(buf, "Bank down (%d)\r\n", preset_bank_current);
+  num = sprintf(buf, "Bank down c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
   buf[num] = 0;
   SEGGER_RTT_WriteString(0, buf);
 }
@@ -250,8 +324,12 @@ static void preset_bank_down() {
 static void preset_load_relativ(uint8_t nr) {
   uint8_t new_preset = 0;
   if(nr < preset_pr_bank) {
-    new_preset = (preset_bank_current * preset_pr_bank) + nr;
+    new_preset = (preset_bank_next * preset_pr_bank) + nr;
   }
+
+  // update bank number
+  preset_bank_current = preset_bank_next;
+  preset_state = PS_PRESET;
   // Debug
   char buf[20];
   int num;
