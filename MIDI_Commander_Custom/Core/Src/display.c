@@ -57,6 +57,9 @@ void display_init(I2C_HandleTypeDef *hi2c1){
  * 1px top and bottom + 10px font = 12 px pr line
  * 12px x 5 = 60px + 2px bottom and top
  */
+/*
+ * @brief Display Preset "PRESET" state
+ */
 void display_show_preset(disp_preset_t *preset) {
   char buf[6];
 
@@ -84,7 +87,9 @@ void display_show_preset(disp_preset_t *preset) {
   }
   need_update = 1;
 }
-
+/*
+ * @brief Display Preset "BANK" state
+ */
 void display_bank_display(int bank) {
   char buf[4];
   draw_fill(Black);
@@ -102,6 +107,18 @@ void display_bank_display(int bank) {
     draw_char(buf[0] , 21, 0);
     draw_char(buf[1] , 53, 0);
   }
+  need_update = 1;
+}
+/*
+ * @brief Display Preset "IAx" state
+ */
+void display_iax_display(int page) {
+
+  draw_fill(Black);
+
+  draw_char('9' , 21, 0);
+  draw_char('0' + page , 53, 0);
+
   need_update = 1;
 }
 /****************************************

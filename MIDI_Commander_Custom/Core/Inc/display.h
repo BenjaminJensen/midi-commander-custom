@@ -19,5 +19,6 @@ void display_init(I2C_HandleTypeDef *);
 void display_show_preset(disp_preset_t *preset);
 void display_update(void);
 void display_bank_display(int bank);
+void display_iax_display(int page);
 
 #endif /* INC_DISPLAY_H_ */

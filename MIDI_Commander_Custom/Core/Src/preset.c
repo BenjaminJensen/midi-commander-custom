@@ -5,6 +5,9 @@
  *      Author: ben
  */
 
+/****************************************
+ * Includes
+ ***************************************/
 #include "preset.h"
 #include "midi.h"
 #include "settings.h"
@@ -56,6 +59,8 @@ static void preset_load_relativ(uint8_t nr);
 static void preset_update_display(void);
 static void preset_bank_display(int bank);
 static void preset_handle_bank(event_t e);
+static void preset_page_next(void);
+static void preset_handle_ia(event_t e);
 
 /****************************************
  * Public functions
@@ -99,10 +104,9 @@ static int preset_process_event(event_t e) {
       preset_handle_preset(e);
       break;
     case PS_IA0:
-      break;
     case PS_IA1:
-      break;
     case PS_IA2:
+      preset_handle_ia(e);
       break;
     case PS_BANK:
       preset_handle_bank(e);
@@ -117,10 +121,13 @@ static int preset_process_event(event_t e) {
        preset_update_display();
        break;
      case PS_IA0:
+       display_iax_display(0);
        break;
      case PS_IA1:
+       display_iax_display(1);
        break;
      case PS_IA2:
+       display_iax_display(2);
        break;
      case PS_BANK:
        preset_bank_display(preset_bank_next);
@@ -132,12 +139,14 @@ static int preset_process_event(event_t e) {
   return 0;
 }
 /*
- *
+ * @brief Button handler for state "preset"
  */
 static void preset_handle_preset(event_t e) {
   switch(e.event.data0) {
     case 0:
-      // Do page changes here
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_page_next();
+      }
       break;
     case 1:
       if(e.event.type == EVENT_BUTTON_PRESS) {
@@ -197,6 +206,9 @@ static void preset_handle_preset(event_t e) {
       break;
   }
 }
+/*
+ * @brief Button handler for "bank" state
+ */
 static void preset_handle_bank(event_t e) {
   switch(e.event.data0) {
     case 4:
@@ -234,7 +246,114 @@ static void preset_handle_bank(event_t e) {
   }
 }
 /*
+ * @brief Button handler for state "IAx"
+ */
+static void preset_handle_ia(event_t e) {
+  switch(e.event.data0) {
+    case 0:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_page_next();
+      }
+      break;
+    case 1:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(0, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(0, 0);
+      }
+      break;
+    case 2:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(1, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(1, 0);
+      }
+      break;
+    case 3:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(2, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(2, 0);
+      }
+      break;
+    case 4:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(3, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(3, 0);
+      }
+      break;
+    case 5:
+      // Save?
+      break;
+    case 6:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(4, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(4, 0);
+      }
+      break;
+    case 7:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(5, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(5, 0);
+      }
+      break;
+    case 8:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(6, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(6, 0);
+      }
+      break;
+    case 9:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(7, 1);
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_ia(7, 0);
+      }
+      break;
+    default:
+      break;
+  }
+}
+/*
  *
+ */
+static void preset_page_next() {
+  switch(preset_state) {
+    case PS_PRESET:
+      preset_state = PS_IA0;
+      break;
+    case PS_IA0:
+      preset_state = PS_IA1;
+      break;
+    case PS_IA1:
+      preset_state = PS_IA2;
+      break;
+    case PS_IA2:
+      preset_state = PS_PRESET;
+      break;
+    default:
+      break;
+  }
+  char buf[16];
+  int num;
+  num = sprintf(buf, "Next Page:%d\n", preset_state);
+  buf[num] = 0;
+  SEGGER_RTT_WriteString(0, buf);
+}
+/*
+ * @brief Handle IA button press
  */
 static void preset_ia(uint8_t nr, uint8_t state) {
   ia_t const*ia = 0;
@@ -338,10 +457,9 @@ static void preset_load_relativ(uint8_t nr) {
   buf[num] = 0;
   SEGGER_RTT_WriteString(0, buf);
 }
-
-/****************************************
- * Private functions
- ***************************************/
+/*
+ * @brief Return current IA state
+ */
 static uint8_t ia_get_state(uint8_t nr) {
   uint8_t state = 0;
   if( nr < 8 ) {
@@ -355,7 +473,9 @@ static uint8_t ia_get_state(uint8_t nr) {
     }
   return state;
 }
-
+/*
+ * @brief Set IA state to ON
+ */
 static void ia_on (uint8_t nr) {
   if( nr < 8 ) {
     preset_current.ia0_7 |= (1<<nr);
@@ -382,7 +502,9 @@ static void ia_on (uint8_t nr) {
   buf[num] = 0;
   SEGGER_RTT_WriteString(0, buf);
 }
-
+/*
+ * @brief Set IA state to OFF
+ */
 static void ia_off (uint8_t nr) {
 
   if( nr < 8 ) {
