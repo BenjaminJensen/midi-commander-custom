@@ -615,7 +615,7 @@ static uint8_t const robot56_Widths[10] =
     43, 43, 
 };
 
-fontStyle_t FontStyle_robot56 = 
+fontStyle_t font_robot56 =
 {
     10, // Glyph count
     48, // First ascii code
@@ -1785,7 +1785,7 @@ static uint8_t const robot10_Widths[95] =
      7,  7,  7,  7,  7,  7,  7, 
 };
 
-fontStyle_t FontStyle_robot10 = 
+fontStyle_t font_robot10 =
 {
     95, // Glyph count
     32, // First ascii code

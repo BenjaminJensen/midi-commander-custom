@@ -20,7 +20,7 @@ typedef struct
 } fontStyle_t;
 
 
-extern fontStyle_t FontStyle_robot56;
-extern fontStyle_t FontStyle_robot10;
+extern fontStyle_t font_robot56;
+extern fontStyle_t font_robot10;
 
 #endif /* FONTLIBRARY_H_ */

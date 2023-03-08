@@ -77,13 +77,13 @@ void display_show_preset(disp_preset_t *preset) {
 
   // Write bank display
   if(preset->bank < 10) {
-    draw_char('0', 42, 0);
-    draw_char('0' + preset->bank, 83, 0);
+    draw_char('0', 42, 0, &font_robot56);
+    draw_char('0' + preset->bank, 83, 0, &font_robot56);
   }
   else {
     sprintf(buf, "%d", preset->bank);
-    draw_char(buf[0] , 42, 0);
-    draw_char(buf[1] , 83, 0);
+    draw_char(buf[0] , 42, 0, &font_robot56);
+    draw_char(buf[1] , 83, 0, &font_robot56);
   }
   need_update = 1;
 }
@@ -99,13 +99,13 @@ void display_bank_display(int bank) {
   // Write bank display
 
   if(bank < 10) {
-    draw_char('0', 21, 0);
-    draw_char('0' + bank, 53, 0);
+    draw_char('0', 21, 0, &font_robot56);
+    draw_char('0' + bank, 53, 0, &font_robot56);
   }
   else {
     sprintf(buf, "%d", bank);
-    draw_char(buf[0] , 21, 0);
-    draw_char(buf[1] , 53, 0);
+    draw_char(buf[0] , 21, 0, &font_robot56);
+    draw_char(buf[1] , 53, 0, &font_robot56);
   }
   need_update = 1;
 }
@@ -116,8 +116,8 @@ void display_iax_display(int page) {
 
   draw_fill(Black);
 
-  draw_char('9' , 21, 0);
-  draw_char('0' + page , 53, 0);
+  draw_char('9' , 21, 0, &font_robot56);
+  draw_char('0' + page , 53, 0, &font_robot56);
 
   need_update = 1;
 }

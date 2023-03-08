@@ -53,8 +53,8 @@ void draw_set_fill_function(draw_fill_f f) {
 /*
  * @brief Draw a character to screen buffer
  */
-int draw_char(char c, int x, int y) {
-  draw_char_internal(c, x, y, &FontStyle_robot56, draw_pixel);
+int draw_char(char c, int x, int y, fontStyle_t *f) {
+  draw_char_internal(c, x, y, f, draw_pixel);
 
  return 0;
 }

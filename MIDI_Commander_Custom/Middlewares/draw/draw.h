@@ -7,6 +7,7 @@
 
 #ifndef INC_DRAW_H_
 #define INC_DRAW_H_
+#include "fonts/fontlibrary.h"
 //
 //  Enumeration for screen colors
 //
@@ -19,6 +20,7 @@ typedef void (*draw_pixel_f)(int x, int y);
 typedef void (*draw_fill_f)(int color);
 void draw_set_pixel_function(draw_pixel_f f);
 void draw_set_fill_function(draw_fill_f f);
-int draw_char(char c, int x, int y);
+int draw_char(char c, int x, int y, fontStyle_t *f);
+int draw_string(const char *s, int x, int y, fontStyle_t *f);
 int draw_fill(draw_color_e color);
 #endif /* INC_DRAW_H_ */
