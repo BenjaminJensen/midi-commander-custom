@@ -8,7 +8,7 @@
 
 #include "draw.h"
 #include <stdio.h>
-#include "fontlibrary.h"
+#include "fonts/fontlibrary.h"
 #include "SEGGER_RTT.h"
 
 //#define DRAW_DEBUG
