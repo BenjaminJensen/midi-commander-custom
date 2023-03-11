@@ -60,7 +60,7 @@ static void preset_update_display(void);
 static void preset_bank_display(int bank);
 static void preset_handle_bank(event_t e);
 static void preset_page_next(void);
-static void preset_handle_ia(event_t e);
+static void preset_handle_ia(event_t e, uint8_t offset);
 
 /****************************************
  * Public functions
@@ -104,10 +104,13 @@ static int preset_process_event(event_t e) {
       preset_handle_preset(e);
       break;
     case PS_IA0:
+      preset_handle_ia(e, 0);
+      break;
     case PS_IA1:
+      preset_handle_ia(e, 1);
+      break;
     case PS_IA2:
-
-      preset_handle_ia(e);
+      preset_handle_ia(e, 2);
       break;
     case PS_BANK:
       preset_handle_bank(e);
@@ -267,7 +270,7 @@ static void preset_handle_bank(event_t e) {
 /*
  * @brief Button handler for state "IAx"
  */
-static void preset_handle_ia(event_t e) {
+static void preset_handle_ia(event_t e, uint8_t offset) {
   switch(e.event.data0) {
     case 0:
       if(e.event.type == EVENT_BUTTON_PRESS) {
@@ -276,34 +279,34 @@ static void preset_handle_ia(event_t e) {
       break;
     case 1:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(0, 1);
+        preset_ia(0 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(0, 0);
+        preset_ia(0 + (8 * offset), 0);
       }
       break;
     case 2:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(1, 1);
+        preset_ia(1 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(1, 0);
+        preset_ia(1 + (8 * offset), 0);
       }
       break;
     case 3:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(2, 1);
+        preset_ia(2 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(2, 0);
+        preset_ia(2 + (8 * offset), 0);
       }
       break;
     case 4:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(3, 1);
+        preset_ia(3 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(3, 0);
+        preset_ia(3 + (8 * offset), 0);
       }
       break;
     case 5:
@@ -311,34 +314,34 @@ static void preset_handle_ia(event_t e) {
       break;
     case 6:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(4, 1);
+        preset_ia(4 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(4, 0);
+        preset_ia(4 + (8 * offset), 0);
       }
       break;
     case 7:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(5, 1);
+        preset_ia(5 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(5, 0);
+        preset_ia(5 + (8 * offset), 0);
       }
       break;
     case 8:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(6, 1);
+        preset_ia(6 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(6, 0);
+        preset_ia(6 + (8 * offset), 0);
       }
       break;
     case 9:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(7, 1);
+        preset_ia(7 + (8 * offset), 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(7, 0);
+        preset_ia(7 + (8 * offset), 0);
       }
       break;
     default:

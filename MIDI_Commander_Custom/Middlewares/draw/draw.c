@@ -11,7 +11,7 @@
 #include "fonts/fontlibrary.h"
 #include "SEGGER_RTT.h"
 
-#define DRAW_DEBUG
+//#define DRAW_DEBUG
 
 static draw_pixel_f draw_pixel = 0;
 static draw_fill_f draw_fill_ = 0;
@@ -85,7 +85,9 @@ int draw_char(char c, int x, int y, fontStyle_t *f) {
 #endif
     return -1;
   }
+#ifdef DRAW_DEBUG
   send_int(x, 'x');
+#endif
   if(c >= f->FirstAsciiCode && c <= (f->FirstAsciiCode + f->GlyphCount)) {
     //
     int index = (c - f->FirstAsciiCode)*f->GlyphBytesWidth*f->GlyphHeight;
