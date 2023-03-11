@@ -11,7 +11,7 @@
 #include "fonts/fontlibrary.h"
 #include "SEGGER_RTT.h"
 
-//#define DRAW_DEBUG
+#define DRAW_DEBUG
 
 static draw_pixel_f draw_pixel = 0;
 static draw_fill_f draw_fill_ = 0;
@@ -22,7 +22,6 @@ static draw_fill_f draw_fill_ = 0;
 #ifdef DRAW_DEBUG
 static void send_int(int i, char c);
 #endif
-static int draw_char_internal(char c, int x, int y, fontStyle_t *f, draw_pixel_f pixel_func) ;
 
 /****************************************
  * Public functions
@@ -50,16 +49,32 @@ void draw_set_pixel_function(draw_pixel_f f) {
 void draw_set_fill_function(draw_fill_f f) {
   draw_fill_ = f;
 }
+
+void draw_vline(int x, int y1, int y2) {
+  for(int i = y1; i <= y2; i++) {
+    draw_pixel(x, i);
+  }
+}
+
+void draw_hline(int y, int x1, int x2) {
+  for(int i = x1; i <= x2; i++) {
+    draw_pixel(i, y);
+  }
+}
+
+int draw_string(const char *s, int x, int y, fontStyle_t *f) {
+  int x_ = x;
+  while(*s) {
+    draw_char(*s, x_, y, f);
+    x_ += f->GlyphWidth[*s- f->FirstAsciiCode];
+    s++;
+  }
+  return 0;
+}
 /*
  * @brief Draw a character to screen buffer
  */
 int draw_char(char c, int x, int y, fontStyle_t *f) {
-  draw_char_internal(c, x, y, f, draw_pixel);
-
- return 0;
-}
-
-static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  draw_pixel_f pixel_func) {
 #ifdef DRAW_DEBUG
   char bufc;
   SEGGER_RTT_WriteString(0, "Draw character\n");
@@ -70,6 +85,7 @@ static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  draw_pixel_
 #endif
     return -1;
   }
+  send_int(x, 'x');
   if(c >= f->FirstAsciiCode && c <= (f->FirstAsciiCode + f->GlyphCount)) {
     //
     int index = (c - f->FirstAsciiCode)*f->GlyphBytesWidth*f->GlyphHeight;
@@ -86,7 +102,8 @@ static int draw_char_internal(char c, int x, int y, fontStyle_t *f,  draw_pixel_
           int i = index + h * f->GlyphBytesWidth + w;
           pixel = (f->GlyphBitmaps[i] & (0x80 >> b)) != 0 ? 1: 0;
           if(pixel != 0) {
-            pixel_func(w*8 + b + x, h + y);
+            if(draw_pixel != 0)
+              draw_pixel(w*8 + b + x, h + y);
           }
 #ifdef DRAW_DEBUG
           bufc = '0'+pixel;

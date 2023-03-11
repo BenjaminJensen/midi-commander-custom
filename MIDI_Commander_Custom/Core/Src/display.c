@@ -112,12 +112,43 @@ void display_bank_display(int bank) {
 /*
  * @brief Display Preset "IAx" state
  */
-void display_iax_display(int page) {
+static const int tag1_x = 0;
+static const int tag2_x = 28 + 5;
+static const int tag3_x = 28 + 5 + 28 + 5;
+static const int tag4_x = 28 + 5 + 28 + 5 + 28 + 5;
+static const int tag_l1_y = 0;
+static const int tag_l2_y = 63-9;
+static const int vline1_x = 31;
+static const int vline2_x = 31+28+5;
+static const int vline3_x = 31+28+5+28+5;
+void display_iax_display(disp_iax_t *data) {
 
   draw_fill(Black);
 
-  draw_char('9' , 21, 0, &font_robot56);
-  draw_char('0' + page , 53, 0, &font_robot56);
+  // Draw top section
+  draw_string(data->ias[0].id ,tag1_x , tag_l1_y, &font_robot10);
+  draw_string(data->ias[1].id ,tag2_x , tag_l1_y, &font_robot10);
+  draw_string(data->ias[2].id ,tag3_x , tag_l1_y, &font_robot10);
+  draw_string(data->ias[3].id ,tag4_x , tag_l1_y, &font_robot10);
+  draw_vline(vline1_x, tag_l1_y, 10);
+  draw_vline(vline2_x, tag_l1_y, 10);
+  draw_vline(vline3_x, tag_l1_y, 10);
+  draw_hline(10,0,127);
+
+  // Draw center section
+  ssd1306_SetCursor(0, 10+9);
+  ssd1306_WriteString(data->name, Font_16x26, White);
+
+  // Draw bottom section
+  draw_hline(63-10,0,127);
+  draw_string(data->ias[4].id ,tag1_x ,tag_l2_y , &font_robot10);
+  draw_string(data->ias[5].id ,tag2_x ,tag_l2_y , &font_robot10);
+  draw_string(data->ias[6].id ,tag3_x ,tag_l2_y , &font_robot10);
+  draw_string(data->ias[7].id ,tag4_x ,tag_l2_y , &font_robot10);
+
+  draw_vline(vline1_x,tag_l2_y, 63);
+  draw_vline(vline2_x,tag_l2_y, 63);
+  draw_vline(vline3_x,tag_l2_y, 63);
 
   need_update = 1;
 }

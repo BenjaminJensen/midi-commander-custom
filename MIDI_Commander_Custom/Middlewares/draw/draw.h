@@ -23,4 +23,8 @@ void draw_set_fill_function(draw_fill_f f);
 int draw_char(char c, int x, int y, fontStyle_t *f);
 int draw_string(const char *s, int x, int y, fontStyle_t *f);
 int draw_fill(draw_color_e color);
+
+void draw_vline(int x, int y1, int y2);
+void draw_hline(int y, int x1, int x2);
+
 #endif /* INC_DRAW_H_ */

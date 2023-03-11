@@ -106,6 +106,7 @@ static int preset_process_event(event_t e) {
     case PS_IA0:
     case PS_IA1:
     case PS_IA2:
+
       preset_handle_ia(e);
       break;
     case PS_BANK:
@@ -115,19 +116,37 @@ static int preset_process_event(event_t e) {
       break;
   }
 
+  disp_iax_t data;
+
+  ia_t const*ia = 0;
   // Show resulting state
   switch(preset_state) {
      case PS_PRESET:
        preset_update_display();
        break;
      case PS_IA0:
-       display_iax_display(0);
+       for(int i = 0 ; i < 8; i++) {
+         settings_get_ia(i, &ia);
+         data.ias[i].id = &(ia->id);
+       }
+       data.name = "IA 1-8";
+       display_iax_display(&data);
        break;
      case PS_IA1:
-       display_iax_display(1);
+       for(int i = 0 ; i < 8; i++) {
+         settings_get_ia(i + 8, &ia);
+         data.ias[i].id = &(ia->id);
+       }
+       data.name = "IA 9-16";
+       display_iax_display(&data);
        break;
      case PS_IA2:
-       display_iax_display(2);
+       for(int i = 0 ; i < 8; i++) {
+         settings_get_ia(i + 16, &ia);
+         data.ias[i].id = &(ia->id);
+       }
+       data.name = "IA 17-24";
+       display_iax_display(&data);
        break;
      case PS_BANK:
        preset_bank_display(preset_bank_next);

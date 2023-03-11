@@ -60,6 +60,7 @@ typedef struct {
         .midi_data0 = 80,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '0', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -68,6 +69,7 @@ typedef struct {
         .midi_data0 = 81,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '1', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -76,6 +78,7 @@ typedef struct {
         .midi_data0 = 82,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '2', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -84,6 +87,7 @@ typedef struct {
         .midi_data0 = 83,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '3', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -92,6 +96,7 @@ typedef struct {
         .midi_data0 = 84,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '4', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -100,6 +105,7 @@ typedef struct {
         .midi_data0 = 85,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '5', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -108,6 +114,7 @@ typedef struct {
         .midi_data0 = 86,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '6', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -116,6 +123,7 @@ typedef struct {
         .midi_data0 = 87,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '7', 0},
       },
       // IA 8-15
       {
@@ -125,6 +133,7 @@ typedef struct {
         .midi_data0 = 88,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '8', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -133,6 +142,7 @@ typedef struct {
         .midi_data0 = 89,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '0', '9', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -141,6 +151,7 @@ typedef struct {
         .midi_data0 = 90,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '0', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -149,6 +160,7 @@ typedef struct {
         .midi_data0 = 91,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '1', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -157,6 +169,7 @@ typedef struct {
         .midi_data0 = 92,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '2', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -165,6 +178,7 @@ typedef struct {
         .midi_data0 = 93,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '3', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -173,6 +187,7 @@ typedef struct {
         .midi_data0 = 94,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '4', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -181,6 +196,7 @@ typedef struct {
         .midi_data0 = 95,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
+        .id = {'I', 'A', '1', '5', 0},
       },
       // IA 8-15
       {
@@ -190,6 +206,7 @@ typedef struct {
        .midi_data0 = 96,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '1', '6', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -198,6 +215,7 @@ typedef struct {
        .midi_data0 = 97,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '1', '7', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -206,6 +224,7 @@ typedef struct {
        .midi_data0 = 98,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '1', '8', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -214,6 +233,7 @@ typedef struct {
        .midi_data0 = 99,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '1', '9', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -222,6 +242,7 @@ typedef struct {
        .midi_data0 = 100,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '2', '0', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -230,6 +251,7 @@ typedef struct {
        .midi_data0 = 101,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '2', '1', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -238,6 +260,7 @@ typedef struct {
        .midi_data0 = 102,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '2', '2', 0},
       },
       {
        .type = IA_TYPE_CC,
@@ -246,6 +269,7 @@ typedef struct {
        .midi_data0 = 103,
        .midi_data1 = 0x7F,
        .midi_data2 = 0,
+       .id = {'I', 'A', '2', '3', 0},
       },
   }
 };

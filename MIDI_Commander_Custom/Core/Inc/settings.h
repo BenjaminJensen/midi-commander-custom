@@ -29,6 +29,7 @@ typedef struct {
   uint8_t midi_data0;
   uint8_t midi_data1;
   uint8_t midi_data2;
+  char id[5];
 } ia_t;
 
 enum pc_mode_e {PC_MODE_DISABLED, PC_MODE_ON};
