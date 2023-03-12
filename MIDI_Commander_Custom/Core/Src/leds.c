@@ -111,7 +111,18 @@ void leds_set_led(uint8_t led, enum led_states_e state) {
   }
  }
 }
-
+/*
+ * @brief Turn off all LEDS to leave a blank canvas
+ */
+void led_all_off(void) {
+  for(int i = 0; i < number_leds; i++) {
+    leds[i].state = LED_OFF;
+    HAL_GPIO_WritePin((GPIO_TypeDef*)leds[i].port, leds[i].pin, GPIO_PIN_SET);
+  }
+}
+/*
+ * Task for making LEDS blink
+ */
 void led_update_task(void) {
  static uint8_t cnt = 0;
 
@@ -136,6 +147,7 @@ void led_update_task(void) {
  }
 
 }
+
 /*
  * Private functions
  */

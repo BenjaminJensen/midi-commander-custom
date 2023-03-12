@@ -11,6 +11,7 @@
 #include "ssd1306.h"
 #include "display.h"
 #include "draw.h"
+#include "leds.h"
 
 static uint8_t need_update = 0;
 static I2C_HandleTypeDef *hi2c1_;
@@ -86,6 +87,31 @@ void display_show_preset(disp_preset_t *preset) {
     draw_char(buf[1] , 83, 0, &font_robot56);
   }
   need_update = 1;
+
+  // Update LEDS
+  led_all_off();
+  if(preset->leds & DISP_LED_P0) {
+    leds_set_led(5, LED_ON);
+  }
+  else if(preset->leds & DISP_LED_P1) {
+    leds_set_led(6, LED_ON);
+  }
+  else if(preset->leds & DISP_LED_P2) {
+    leds_set_led(7, LED_ON);
+  }
+  else if(preset->leds & DISP_LED_P3) {
+    leds_set_led(8, LED_ON);
+  }
+  if(preset->leds & DISP_LED_IA0) {
+      leds_set_led(1, LED_ON);
+  }
+  if(preset->leds & DISP_LED_IA1) {
+    leds_set_led(2, LED_ON);
+  }
+  if(preset->leds & DISP_LED_IA2) {
+    leds_set_led(3, LED_ON);
+  }
+
 }
 /*
  * @brief Display Preset "BANK" state
@@ -108,6 +134,9 @@ void display_bank_display(int bank) {
     draw_char(buf[1] , 53, 0, &font_robot56);
   }
   need_update = 1;
+
+  // Update LEDS
+  led_all_off();
 }
 /*
  * @brief Display Preset "IAx" state
@@ -151,6 +180,34 @@ void display_iax_display(disp_iax_t *data) {
   draw_vline(vline3_x,tag_l2_y, 63);
 
   need_update = 1;
+
+  // update LEDS
+  led_all_off();
+  if(data->leds & 0x01) {
+    leds_set_led(1, LED_ON);
+  }
+  if(data->leds & 0x02) {
+    leds_set_led(2, LED_ON);
+  }
+  if(data->leds & 0x04) {
+    leds_set_led(3, LED_ON);
+  }
+  if(data->leds & 0x08) {
+    leds_set_led(4, LED_ON);
+  }
+  // IA 4-7
+  if(data->leds & 0x10) {
+    leds_set_led(6, LED_ON);
+  }
+  if(data->leds & 0x20) {
+    leds_set_led(7, LED_ON);
+  }
+  if(data->leds & 0x40) {
+    leds_set_led(8, LED_ON);
+  }
+  if(data->leds & 0x80) {
+    leds_set_led(9, LED_ON);
+  }
 }
 /****************************************
  * Private functions

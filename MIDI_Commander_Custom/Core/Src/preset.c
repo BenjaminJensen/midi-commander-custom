@@ -88,6 +88,18 @@ static void preset_update_display() {
   p.pc[2] = 88;
   p.pc[3] = 99;
   p.pc[4] = 101;
+
+  p.leds = 0;
+  // Set LED states
+  if(preset_current.ia0_7 & 0x01)
+    p.leds |= DISP_LED_IA0;
+  if(preset_current.ia0_7 & 0x02)
+    p.leds |= DISP_LED_IA1;
+  if(preset_current.ia0_7 & 0x04)
+    p.leds |= DISP_LED_IA2;
+  // Riskey but works
+  p.leds |= 1 << preset_number_current;
+
   display_show_preset(&p);
 }
 static void preset_bank_display(int bank) {
@@ -120,7 +132,7 @@ static int preset_process_event(event_t e) {
   }
 
   disp_iax_t data;
-
+  data.leds = 0;
   ia_t const*ia = 0;
   // Show resulting state
   switch(preset_state) {
@@ -130,7 +142,10 @@ static int preset_process_event(event_t e) {
      case PS_IA0:
        for(int i = 0 ; i < 8; i++) {
          settings_get_ia(i, &ia);
-         data.ias[i].id = &(ia->id);
+         data.ias[i].id = (const char*)&(ia->id);
+         if(preset_current.ia0_7 & (1 << i)) {
+           data.leds |= (1 << i);
+         }
        }
        data.name = "IA 1-8";
        display_iax_display(&data);
@@ -138,7 +153,10 @@ static int preset_process_event(event_t e) {
      case PS_IA1:
        for(int i = 0 ; i < 8; i++) {
          settings_get_ia(i + 8, &ia);
-         data.ias[i].id = &(ia->id);
+         data.ias[i].id = (const char*)&(ia->id);
+         if(preset_current.ia8_15 & (1 << i)) {
+           data.leds |= (1 << i);
+         }
        }
        data.name = "IA 9-16";
        display_iax_display(&data);
@@ -146,7 +164,10 @@ static int preset_process_event(event_t e) {
      case PS_IA2:
        for(int i = 0 ; i < 8; i++) {
          settings_get_ia(i + 16, &ia);
-         data.ias[i].id = &(ia->id);
+         data.ias[i].id = (const char*)&(ia->id);
+         if(preset_current.ia16_23 & (1 << i)) {
+           data.leds |= (1 << i);
+         }
        }
        data.name = "IA 17-24";
        display_iax_display(&data);
@@ -437,6 +458,7 @@ static void preset_load_relativ(uint8_t nr) {
   uint8_t new_preset = 0;
   if(nr < preset_pr_bank) {
     new_preset = (preset_bank_next * preset_pr_bank) + nr;
+    preset_number_current = nr;
   }
 
   // update bank number
