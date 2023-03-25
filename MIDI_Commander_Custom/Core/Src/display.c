@@ -208,6 +208,9 @@ void display_iax_display(disp_iax_t *data) {
   if(data->leds & 0x80) {
     leds_set_led(9, LED_ON);
   }
+  if(data->edited) {
+    leds_set_led(5, LED_BLINK);
+  }
 }
 /****************************************
  * Private functions

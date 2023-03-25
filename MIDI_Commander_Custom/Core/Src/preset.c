@@ -20,22 +20,14 @@
  * Private types and variables
  ***************************************/
 
-// Preset
-typedef struct {
-  uint8_t pc0;
-  uint8_t pc1;
-  uint8_t pc2;
-  uint8_t pc3;
-  uint8_t pc4;
-  uint8_t ia0_7;
-  uint8_t ia8_15;
-  uint8_t ia16_23;
-} preset_t;
-
 static const uint8_t preset_pr_bank = 4;
-static const uint8_t preset_bank_max = 32; // 32 banks of 4 presets, total 128 presets
-static preset_t preset_current = {0};
+static const uint8_t preset_bank_max = 16; // 16 banks of 4 presets, total 64 presets
+#pragma pack(push,1)
+static preset_t preset_current = {0}; // Current state of current preamp
+#pragma pack(pop)
+static preset_t preset_original = {0}; // As loaded from memory
 static uint8_t preset_number_current = 0;
+static uint8_t preset_number_abs_current = 0;
 static uint8_t preset_bank_current = 0;
 static uint8_t preset_bank_next = 0;
 
@@ -61,6 +53,7 @@ static void preset_bank_display(int bank);
 static void preset_handle_bank(event_t e);
 static void preset_page_next(void);
 static void preset_handle_ia(event_t e, uint8_t offset);
+static uint8_t preset_edited(void);
 
 /****************************************
  * Public functions
@@ -78,7 +71,24 @@ void preset_init() {
  * Private functions
  ***************************************/
 /*
- *
+ * @brief Compares preset as loaded from memory with current state of preset
+ */
+static uint8_t preset_edited() {
+  uint8_t edited = 0;
+
+  if(preset_current.ia0_7 != preset_original.ia0_7) {
+    edited |= 1;
+  }
+  if(preset_current.ia8_15 != preset_original.ia8_15) {
+    edited |= 1;
+  }
+  if(preset_current.ia16_23 != preset_original.ia16_23) {
+    edited |= 1;
+  }
+  return edited;
+}
+/*
+ * @brief Update display on "Preset" page
  */
 static void preset_update_display() {
   disp_preset_t p;
@@ -133,6 +143,8 @@ static int preset_process_event(event_t e) {
 
   disp_iax_t data;
   data.leds = 0;
+  data.edited = preset_edited();
+
   ia_t const*ia = 0;
   // Show resulting state
   switch(preset_state) {
@@ -313,7 +325,20 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
       ia_num = 3;
       break;
     case 5:
-      // Save?
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        /*
+        preset_current.crc = 1;
+        preset_current.pc0 = 2;
+        preset_current.pc1 = 3;
+        preset_current.pc2 = 4;
+        preset_current.pc3 = 5;
+        preset_current.pc4 = 6;
+        preset_current.ia0_7 = 7;
+        preset_current.ia8_15 = 8;
+        preset_current.ia16_23 = 9;
+        */
+        settings_save_preset(preset_number_abs_current, &preset_current);
+      }
       break;
     case 6:
       ia_num = 4;
@@ -459,6 +484,7 @@ static void preset_load_relativ(uint8_t nr) {
   if(nr < preset_pr_bank) {
     new_preset = (preset_bank_next * preset_pr_bank) + nr;
     preset_number_current = nr;
+    preset_number_abs_current = new_preset;
   }
 
   // update bank number

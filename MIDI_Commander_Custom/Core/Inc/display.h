@@ -26,6 +26,7 @@ typedef struct {
   disp_ia_t ias[8];
   const char *name;
   uint8_t leds;
+  uint8_t edited;
 } disp_iax_t;
 
 void display_init(I2C_HandleTypeDef *);

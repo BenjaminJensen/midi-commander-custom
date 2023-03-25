@@ -32,6 +32,19 @@ typedef struct {
   char id[5];
 } ia_t;
 
+// Preset
+typedef struct __attribute__((packed)){
+  uint16_t crc;
+  uint8_t pc0;
+  uint8_t pc1;
+  uint8_t pc2;
+  uint8_t pc3;
+  uint8_t pc4;
+  uint8_t ia0_7;
+  uint8_t ia8_15;
+  uint8_t ia16_23;
+} preset_t;
+
 enum pc_mode_e {PC_MODE_DISABLED, PC_MODE_ON};
 typedef struct {
   uint8_t pc;
@@ -44,5 +57,7 @@ typedef struct {
  ***************************************/
 int settings_get_ia(uint8_t nr, ia_t const**ia);
 void settings_init(void);
+int settings_load_preset(int nr, preset_t* preset);
+int settings_save_preset(int nr, preset_t* preset);
 
 #endif /* INC_SETTINGS_H_ */
