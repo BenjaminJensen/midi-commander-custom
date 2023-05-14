@@ -93,11 +93,11 @@ static uint8_t preset_edited() {
 static void preset_update_display() {
   disp_preset_t p;
   p.bank = preset_bank_current;
-  p.pc[0] = 2;
-  p.pc[1] = 77;
-  p.pc[2] = 88;
-  p.pc[3] = 99;
-  p.pc[4] = 101;
+  p.pc[0] = preset_current.pc0;
+  p.pc[1] = preset_current.pc1;
+  p.pc[2] = preset_current.pc2;
+  p.pc[3] = preset_current.pc3;
+  p.pc[4] = preset_current.pc4;
 
   p.leds = 0;
   // Set LED states
@@ -326,13 +326,15 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
       break;
     case 5:
       if(e.event.type == EVENT_BUTTON_PRESS) {
+
+        //preset_current.crc = 1 + preset_number_abs_current * 4;
+
+        preset_current.pc0 = 1 + preset_number_abs_current * 4;
+        preset_current.pc1 = 2 + preset_number_abs_current * 4;
+        preset_current.pc2 = 3 + preset_number_abs_current * 4;
+        preset_current.pc3 = 4 + preset_number_abs_current * 4;
+        preset_current.pc4 = 5 + preset_number_abs_current * 4;
         /*
-        preset_current.crc = 1;
-        preset_current.pc0 = 2;
-        preset_current.pc1 = 3;
-        preset_current.pc2 = 4;
-        preset_current.pc3 = 5;
-        preset_current.pc4 = 6;
         preset_current.ia0_7 = 7;
         preset_current.ia8_15 = 8;
         preset_current.ia16_23 = 9;
@@ -486,17 +488,16 @@ static void preset_load_relativ(uint8_t nr) {
     preset_number_current = nr;
     preset_number_abs_current = new_preset;
   }
-
-  // update bank number
-  preset_bank_current = preset_bank_next;
-  preset_state = PS_PRESET;
-  // Debug
-  char buf[20];
-  int num;
-
-  num = sprintf(buf, "Load preset(%d)\r\n", new_preset);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  if(settings_load_preset(nr, &preset_current) == 0) {
+    // update bank number
+    preset_bank_current = preset_bank_next;
+    preset_state = PS_PRESET;
+    // Debug
+    //SEGGER_RTT_printf(0, "Load preset(%d)\r\n", new_preset);
+  }
+  else {
+    SEGGER_RTT_printf(0, "Load preset(%d) failed!\r\n", new_preset);
+  }
 }
 /*
  * @brief Return current IA state

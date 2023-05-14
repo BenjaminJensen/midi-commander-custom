@@ -11,6 +11,7 @@
 #include "SEGGER_RTT.h"
 #include <stdio.h>
 #include "crc.h"
+#include "flash_storage.h"
 
 #define NUM_IA (24)
 #define NUM_PC (5)
@@ -287,6 +288,8 @@ static int hal_eeprom_byte_write(uint16_t addr, uint8_t *b);
 static int hal_eeprom_byte_read(uint16_t addr, uint8_t *b);
 static int hal_eeprom_page_write(uint16_t addr, uint8_t *b, uint8_t size);
 static int hal_eeprom_bulk_read(uint16_t addr, uint8_t *b, uint8_t size);
+static int settings_preset_nr_to_addr(uint8_t nr);
+static void hal_dump_mem(uint8_t *buf, uint8_t size);
 
 static void hal_eeprom_read_back(uint16_t addr, uint8_t *data, uint8_t size) {
   uint8_t read[16] = {0};
@@ -342,6 +345,7 @@ void settings_init() {
   // validate loaded settings
   // if not valid
   //    Load factory settings
+  flash_storage_init();
   settings_current = &settings_factory;
 }
 /*
@@ -363,7 +367,19 @@ int settings_get_ia(uint8_t nr, ia_t const**ia) {
  */
 int settings_load_preset(int nr, preset_t* preset) {
   int error = 0;
+  int addr;
+  uint16_t crc = 0;
+  addr = settings_preset_nr_to_addr(nr);
 
+  flash_storage_read(addr, (uint8_t*)preset, 10);
+  //hal_eeprom_bulk_read(addr, (uint8_t*)preset, 10);
+  crc = crc16_calc((uint8_t*)preset + 2, 8);
+  SEGGER_RTT_printf(0, "settings_load_preset: nr: %d, addr: %d\n", nr, addr);
+  if(crc != preset->crc) {
+    error = -1;
+    hal_dump_mem((uint8_t*)preset, 10);
+    SEGGER_RTT_printf(0, "Load preset(crc error) load: %d != %d\n", preset->crc, crc);
+  }
   return error;
 }
 /*
@@ -371,10 +387,37 @@ int settings_load_preset(int nr, preset_t* preset) {
  */
 int settings_save_preset(int nr, preset_t* preset) {
   int error = 0;
-  uint16_t addr = 0;
-  SEGGER_RTT_WriteString(0, "Settings: Write preset\n");
+  uint16_t addr;
+
   // Align adress to eeprom pages
-  //TODO: should not live here
+  addr = settings_preset_nr_to_addr(nr);
+
+  // Calc CRC
+  preset->crc = crc16_calc((uint8_t*)preset + 2, 8);
+
+  SEGGER_RTT_printf(0, "Write preset\naddr: %d, nr: %d, crc: %x\n", addr, nr, preset->crc);
+
+  flash_storage_write(addr, (uint8_t*)preset, 10);
+  //int addr = settings_preset_mem_offset + nr * sizeof(preset);
+  //hal_eeprom_page_write(addr, (uint8_t*)preset, 10);
+  //hal_eeprom_read_back(addr, (uint8_t*)preset, 10);
+
+  return error;
+}
+/****************************************
+ * Private function declarations
+ ***************************************/
+static void hal_dump_mem(uint8_t *buf, uint8_t size) {
+  for(int i = 0; i < size; i++) {
+    SEGGER_RTT_printf(0, "%x, ", buf[i]);
+  }
+  SEGGER_RTT_printf(0, "\n");
+}
+/*
+ *
+ */
+static int settings_preset_nr_to_addr(uint8_t nr) {
+  int addr;
   if(nr < 14) {
     // Page 2
     addr = 116 + 256; // Addr 115 on page 2
@@ -393,16 +436,11 @@ int settings_save_preset(int nr, preset_t* preset) {
     // Add preset offset
     addr += (nr - 39) * 10;
   }
-  preset->crc = crc16_calc((uint8_t*)(preset + 2), 8);
-  SEGGER_RTT_printf(0, "addr: %d, nr: %d, crc: %x\n", addr, nr, preset->crc);
-  //int addr = settings_preset_mem_offset + nr * sizeof(preset);
-  hal_eeprom_page_write(addr, (uint8_t*)preset, 10);
-  hal_eeprom_read_back(addr, (uint8_t*)preset, 10);
-  return error;
+  return addr;
 }
-/****************************************
- * Private function declarations
- ***************************************/
+/*
+ *
+ */
 static int settings_initialie_i2c(I2C_HandleTypeDef *hi2c_handle) {
   int error = 0;
   /* Peripheral clock enable */
@@ -462,18 +500,18 @@ static int hal_eeprom_byte_read(uint16_t addr, uint8_t *b) {
   settings_initialie_i2c(&hi2c_handle);
 
   if(addr >= (256*3)) {
-    ctrl |= 0x03;
+    ctrl |= 0x03 << 1;
     actual_addr = addr - 256*3;
   }
   else if(addr >= (256*2)) {
-    ctrl |= 0x02;
+    ctrl |= 0x02 << 1;
     actual_addr = addr - 256*2;
   }
   else if(addr >= 256) {
-    ctrl |= 0x01;
+    ctrl |= 0x01 << 1;
     actual_addr = addr - 256;
   }
-  HAL_I2C_Mem_Read(&hi2c_handle, ctrl, actual_addr, 1, b, 1, 10);
+  //HAL_I2C_Mem_Read(&hi2c_handle, eeprom_addr | ((addr & 0x0300) >> 7), (address & 0xff), I2C_MEMADD_SIZE_8BIT, b, 1, 10);
 
   return error;
 }
@@ -489,21 +527,27 @@ static int hal_eeprom_page_write(uint16_t addr, uint8_t *b, uint8_t size) {
   settings_initialie_i2c(&hi2c_handle);
   // Set up block
   if(addr >= (256*3)) {
-    ctrl |= 0x03;
+    ctrl |= 0x03 << 1;
     actual_addr = addr - 256*3;
   }
   else if(addr >= (256*2)) {
-    ctrl |= 0x02;
+    ctrl |= 0x02 << 1;
     actual_addr = addr - 256*2;
   }
   else if(addr >= 256) {
-    ctrl |= 0x01;
+    ctrl |= 0x01 << 1;
     actual_addr = addr - 256;
   }
-
+  SEGGER_RTT_printf(0, "hal_eeprom_page_write: addr: %d, ctrl: %x, size\n", actual_addr, ctrl, size);
+  hal_dump_mem(b, size);
   // Check if content can be within one page
   if(size <= 16) {
-    HAL_I2C_Mem_Write(&hi2c_handle, ctrl, actual_addr, 1, b, size, 10);
+    HAL_StatusTypeDef status;
+
+    status = HAL_I2C_Mem_Write(&hi2c_handle, eeprom_addr | ((addr & 0x0300) >> 7), (addr & 0xff), I2C_MEMADD_SIZE_8BIT, b, size, 10);
+    if(status != 0) {
+      SEGGER_RTT_printf(0, "hal_eeprom_page_write: error(%d)", status);
+    }
   }
 
   return error;
@@ -513,6 +557,7 @@ static int hal_eeprom_page_write(uint16_t addr, uint8_t *b, uint8_t size) {
  *
  */
 static int hal_eeprom_bulk_read(uint16_t addr, uint8_t *b, uint8_t size) {
+
   uint8_t ctrl = eeprom_addr | 0x1; // Read
   uint8_t actual_addr = 0;
   int error = 0;
@@ -521,19 +566,31 @@ static int hal_eeprom_bulk_read(uint16_t addr, uint8_t *b, uint8_t size) {
   settings_initialie_i2c(&hi2c_handle);
 
   if(addr >= (256*3)) {
-    ctrl |= 0x03;
+    ctrl |= 0x03 << 1;
     actual_addr = addr - 256*3;
   }
   else if(addr >= (256*2)) {
-    ctrl |= 0x02;
+    ctrl |= 0x02 << 1;
     actual_addr = addr - 256*2;
   }
   else if(addr >= 256) {
-    ctrl |= 0x01;
+    ctrl |= 0x01 << 1;
     actual_addr = addr - 256;
   }
+  SEGGER_RTT_printf(0, "hal_eeprom_bulk_read: addr: %d, ctrl: %x\n", actual_addr, ctrl);
 
-  HAL_I2C_Mem_Read(&hi2c_handle, ctrl, actual_addr, 1, b, size, 10);
+  HAL_StatusTypeDef status;
+   status = HAL_I2C_Mem_Read(&hi2c_handle, eeprom_addr | ((addr & 0x0300) >> 7), (addr & 0xff), I2C_MEMADD_SIZE_8BIT, b, size, 10);
+   if(status != 0) {
+     SEGGER_RTT_printf(0, "hal_eeprom_bulk_read: error(%d)", status);
+   }
 
+  /*
+  HAL_StatusTypeDef status;
+  status = HAL_I2C_Mem_Read(&hi2c_handle, ctrl, actual_addr, 1, b, size, 10);
+  if(status != 0) {
+    SEGGER_RTT_printf(0, "hal_eeprom_bulk_read: error(%d)", status);
+  }
+  */
   return error;
 }

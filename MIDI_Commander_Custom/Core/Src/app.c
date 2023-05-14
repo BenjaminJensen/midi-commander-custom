@@ -26,13 +26,14 @@ void app_init() {
 
   event_init();
   preset_init();
-
+  /*
   fifo_init(&event_queue_handle, 0x1F,event_queue_data );
 
   task_create(&task1_tcb, 1000, &task1);
   task_start(&task1_tcb);
   task_create(&task2_tcb, 500, &task2);
   task_start(&task2_tcb);
+  */
 }
 
 
@@ -40,7 +41,7 @@ void app_init() {
 void app_run() {
 
 
-  task_scheduler_run();
+  //task_scheduler_run();
   // scan buttons 10ms
 
   // process events

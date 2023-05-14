@@ -16,6 +16,7 @@
  */
 
 #include "crc.h"
+#include "SEGGER_RTT.h"
 
 static const uint16_t crc16_shifter = 0x00FF;
 
@@ -56,10 +57,18 @@ static const uint16_t crc16_table[] = {
 
 uint16_t crc16_calc(uint8_t *input, int length) {
   uint16_t crc = 0;
+#ifdef CRC_DEBUG
+  SEGGER_RTT_printf(0, "CRC16:\n");
+#endif
   for(int i = 0; i < length; i++) {
+#ifdef CRC_DEBUG
+    SEGGER_RTT_printf(0, "%x, ", *input);
+#endif
     uint16_t  tableValue = crc16_table[((crc >> 8) ^ *(uint8_t*)input++) & crc16_shifter];
     crc = (crc << 8) ^ tableValue;
   }
-
+#ifdef CRC_DEBUG
+  SEGGER_RTT_printf(0, "\n");
+#endif
   return crc;
 }
