@@ -7,19 +7,19 @@ OpenDocument="event.c", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Comman
 OpenDocument="startup_stm32f103retx.s", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Startup/startup_stm32f103retx.s", Line=54
 OpenDocument="display.c", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/display.c", Line=15
 OpenDocument="main.c", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/main.c", Line=79
-OpenDocument="flash_storage.c", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/flash_storage.c", Line=287
+OpenDocument="flash_storage.c", FilePath="D:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/flash_storage.c", Line=98
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=1, w=741, h=450, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=519, h=178, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=254
-OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=712, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x807C750
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=0, w=741, h=275, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=2, w=519, h=222, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=519, h=324, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=738, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=855, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=1, w=741, h=442, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=519, h=186, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=254
+OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=722, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x807C440
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=0, w=741, h=283, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=2, w=519, h=224, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=519, h=314, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=748, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=867, h=599, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 TableHeader="Vector Catches", SortCol="", SortOrder="ASCENDING", VisibleCols=["";"Vector Catch";"Description"], ColWidths=[50;300;500]
-TableHeader="Break & Tracepoints", SortCol="", SortOrder="ASCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[100;100;146;356]
-TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[100;100;100;100;147;194]
+TableHeader="Break & Tracepoints", SortCol="", SortOrder="ASCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[100;100;146;173]
+TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[100;100;100;100;147;224]
 TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[1086;100;100;100;200]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[209;105;410]
