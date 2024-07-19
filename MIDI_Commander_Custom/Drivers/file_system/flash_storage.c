@@ -260,7 +260,7 @@ int fs_read_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data) {
   uintptr_t var_addr = fs_locate_variable(fs_p, page, v_addr, fs_p->var_size);
 
   // copy data
-
+  error = fs_p->read(var_addr, data, fs_p->var_size);
 
   return error;
 }
@@ -491,56 +491,7 @@ int fs_move_to_page(fs_memory_setup_t *fs_p, uintptr_t from_page, uintptr_t to_p
   }
   return error;
 }
-/*
-  int error = 0;
-  uint16_t variables[FS_MAX_VARIABLES];
-  int index = 0;
 
-  // Initialize found variables to none (=0xFFFF)
-  for(int i = 0; i < FS_MAX_VARIABLES; i++){
-    variables[i] = 0xFFFF;
-  }
-
-    // Calculate offset at end of page
-  unsigned int end_offset = (fs_p->page_size - page_start_offset) % (size + v_addr_size);
-  // First available address
-  uintptr_t next_addr = from_page + fs_p->page_size - end_offset - size - v_addr_size;
-  
-  while(next_addr >= (from_page + page_start_offset)) {
-    uint16_t v_addr;
-    uintptr_t v_addr_addr = next_addr - 2;
-    v_addr = *(volatile uint16_t*)(v_addr_addr);
-    int found = 0;
-    for(int i = 0; i < (index + 1); i++) {
-      if(variables[i] == v_addr) {
-        found = 1;
-        //log_msg("fs_move_to_page: found == 1, var: %x, a: %x, i: %d\n", v_addr, next_var_addr, i);
-
-      }
-    }
-    if(found == 0) {
-      //log_msg("fs_move_to_page: found == 0\n");
-      log_msg("fs_move_to_page: found == 0, var: %x, a: %x\n", v_addr, next_addr);
-      variables[index] = v_addr;
-      index++;
-      //------------------------------------------------
-      // Copy to new page
-      //------------------------------------------------
-      uintptr_t new_addr = fs_find_free_address(fs_p, to_page, size);
-      if(new_addr != 0xFFFFFFFF) {
-        log_msg("fs_move_to_page: Move == 0, var: %x, a: %x\n", v_addr, new_addr);
-      }
-      else {
-        log_msg("fs_move_to_page: Unable to move var: %x, a: %x\n", v_addr, new_addr);
-      }
-    }
-
-    // Next a variable
-    next_addr = next_addr - size;
-  }
-  return error;
-}
-*/
 /*
  * @brief Write a variable to a specific memory address
  * note: the memory address needs to be erased and valid, else the function will fail
@@ -644,37 +595,6 @@ int fs_write_and_verify_variable(fs_memory_setup_t *fs_p, uint16_t virtual_addre
   return error;
 }
 
-/*
- * @brief Slimmed down version of the ST HAL FLASH_Program_HalfWord
- * NOTE: Is tailored to devices with two flash banks 0 and 1
- */
-/*
-static int fs_write_halfword(uint32_t addr, uint16_t data) {
-  int error = 0;
-  HAL_StatusTypeDef hal_status = HAL_OK;
-
-  // Process Locked
-  hal_status = HAL_FLASH_Lock();
-
-  if(hal_status == HAL_OK) {
-
-    // Proceed to program the new data
-    SET_BIT(FLASH->CR, FLASH_CR_PG);
-
-    // Write data in the address
-    *(volatile uint16_t*)addr = data;
-
-    // Process Unlocked
-    HAL_FLASH_Unlock();
-  }
-  else {
-    error = -1;
-    log_msg("fs_write_halfword: unable to lock flash!\n");
-  }
-
-  return error;
-}
-*/
 /*
  *
  */

@@ -58,16 +58,25 @@ void file_system_init() {
 static void file_system_memory_setup() {
   const settings_t * s;
   s = get_settings_factory();
+  settings_t read_back;
 
   fs_initialize_page(&settings_memory);
+  for(int k = 0; k < 20; k++) {
+    log_msg("Memory test (%d)\n", k);
+    // TEST
+    fs_write_variable(&settings_memory, 1, (uint8_t*)s);
 
-  // TEST
-  fs_write_and_verify_variable(&settings_memory, 1, (uint8_t*)s, sizeof(settings_t));
-  settings_t s2;
+    fs_read_variable(&settings_memory, 1, (uint8_t*)&read_back);
 
+    uint8_t* org = (uint8_t*)s;
+    uint8_t* new = (uint8_t*)&read_back;
 
-
-
+    for(int i = 0; i < settings_memory.var_size; i++) {
+      if(org[i] != new[i]) {
+        log_msg("FS ERROR: i(%i) o(%x), n(%x)\n", i, org[i], new[i]);
+      }
+    }
+  }
   // TEST END
   log_msg("File-system: Memory setup complete\n");
 }
