@@ -11,8 +11,18 @@
 #include "SEGGER_RTT.h"
 
 int log_msg(const char *format, ...) {
+  /*
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+  */
   int ret;
-  ret = SEGGER_RTT_printf(0, format);
+
+  va_list args;
+  va_start(args, format);
+  ret = SEGGER_RTT_vprintf(0, format, &args);
+  va_end(args);
 
   return ret;
 }

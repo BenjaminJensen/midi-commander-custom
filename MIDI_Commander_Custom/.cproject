@@ -48,6 +48,7 @@
 									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Middlewares\draw&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Middlewares\ssd1306&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Drivers\Config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/littlefs}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Drivers\RTT&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Drivers\Syscalls&quot;"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F1xx_HAL_Driver/Inc"/>
@@ -59,6 +60,7 @@
 									<listOptionValue builtIn="false" value="../Middlewares/ST/STM32_USB_Device_Library/Core/Inc"/>
 									<listOptionValue builtIn="false" value="../Middlewares/ST/STM32_USB_Device_Library/Class/AUDIO/Inc"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Middlewares/ST/STM32_USB_Device_Library/Class/MIDI/Inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\git\stm32\midi-commander-custom\MIDI_Commander_Custom\Drivers\file_system&quot;"/>
 								</option>
 								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard.1115818364" name="Language standard" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard" useByScannerDiscovery="true" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.languagestandard.value.gnu11" valueType="enumerated"/>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1071935598" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>

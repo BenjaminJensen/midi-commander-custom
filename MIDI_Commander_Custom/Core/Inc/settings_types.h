@@ -18,11 +18,15 @@ enum ia_mode_e {IA_MODE_LATCH, IA_MODE_TOGGLE};
 enum ia_state_e {IA_STATE_ON = 1, IA_STATE_OFF = 0};
 enum ia_type_e {IA_TYPE_DISABLED = 0, IA_TYPE_PC, IA_TYPE_CC};
 /*
+ * WARNING: Will be written to the flash system
+ * If changed, flash content will be invalid
+ */
+/*
  * type CC / PC
  * mode 4[latch / toggle] 4[state]
  * midi chan
  * midi0 (PC / CC)
- * midi1 (CC ON)
+ * midi1 (CC ON) (PC nr)
  * midi2 (CC OFF)
  */
 typedef struct {
@@ -36,6 +40,10 @@ typedef struct {
   char id[5];
 } ia_t;
 
+/*
+ * WARNING: Will be written to the flash system
+ * If changed, flash content will be invalid
+ */
 // Preset
 typedef struct __attribute__((packed)){
   uint16_t crc;
@@ -50,12 +58,20 @@ typedef struct __attribute__((packed)){
 } preset_t;
 
 enum pc_mode_e {PC_MODE_DISABLED, PC_MODE_ON};
+/*
+ * WARNING: Will be written to the flash system
+ * If changed, flash content will be invalid
+ */
 typedef struct {
   uint8_t pc;
   enum pc_mode_e mode:4;
   uint8_t chan:4;
 } pc_t;
 
+/*
+ * WARNING: Will be written to the flash system
+ * If changed, flash content will be invalid
+ */
 typedef struct __attribute__((packed)){
   ia_t ias[NUM_IA];
   pc_t pcs[NUM_PC];
