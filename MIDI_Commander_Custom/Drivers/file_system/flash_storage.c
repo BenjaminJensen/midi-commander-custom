@@ -111,7 +111,8 @@ fs_memory_setup_t *fs_setup_memory(uintptr_t flash_start, flash_write_short sing
 }
 
 /*
-* @brief Initializes a set of pages ready for storage
+* @brief Initializes a set of pages ready for storage.
+* Use as asetup function for a memory area
 */
 int fs_initialize_page(fs_memory_setup_t *fs_p) {
   int error;
@@ -168,83 +169,6 @@ int fs_initialize_page(fs_memory_setup_t *fs_p) {
 /****************************************
  * Public functions
  ***************************************/
-int flash_storage_init(uintptr_t flash_start, flash_write_short single, flash_write_blob blob, flash_erase_page erase) {
-  int error = 0;
-
-  fs_setup_memory(flash_start, single, blob, erase);
-
-  if( error == 0) {
-
-    // Run through all pages and validate
-    /*
-    for(int page_index = 0; page_index < (fs_mem_map.pages / 2 ); page_index++) {
-     
-    } // for loop
-    */
-  }
-  
-  return error;
-}
-
-/*
- *
- */
-int flash_storage_write(uint16_t addr, uint8_t *data, uint16_t size) {
-  int error = 0;
-
-  return error;
-}
-
-int fs_read_preset(uint16_t v_addr, uint8_t *data) {
-  int error = 0;
-
-  // Find page from preset
-
-  // Find newest v_address, if not return "fs_error_c"
-
-  // Copy data to *data
-  return error;
-}
-/*
- * 36 presets pr 2048kb page = 1008 bytes pr page
- */
-int fs_write_preset(fs_memory_setup_t *fs_p, int nr, uint8_t *data) {
-  int error = 0;
-  /*
-  uintptr_t page_0;
-  uintptr_t page_1;
-
-  if(nr < 36) {
-    // page 0 + 1
-    page_0 = fs_mem_map.preset_pages[0];
-    page_1 = fs_mem_map.preset_pages[0] + fs_mem_map.page_size * 1;
-  }
-  else if(nr < (36*2)) {
-    // page 2 + 3
-    page_0 = fs_mem_map.preset_pages[1] + fs_mem_map.page_size * 2;
-    page_1 = fs_mem_map.preset_pages[1] + fs_mem_map.page_size * 3;
-  }
-  else if(nr < (36*3)) {
-    // page 4 + 5
-    page_0 = fs_mem_map.preset_pages[2] + fs_mem_map.page_size * 4;
-    page_1 = fs_mem_map.preset_pages[2] + fs_mem_map.page_size * 5;
-  }
-  else if(nr < (36*4)) {
-    // page 6 + 7
-    page_0 = fs_mem_map.preset_pages[3] + fs_mem_map.page_size * 6;
-    page_1 = fs_mem_map.preset_pages[3] + fs_mem_map.page_size * 7;
-  }
-  else {
-    log_msg("fs_write_preset: invalid preset number (%d", nr);
-    error = -1;
-  }
-  */
-  if(error == 0) {
-    error = fs_write_and_verify_variable(fs_p, nr, data, fs_preset_size);
-  }
-
-  return error;
-}
 
 int fs_read_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data) {
   int error = 0;

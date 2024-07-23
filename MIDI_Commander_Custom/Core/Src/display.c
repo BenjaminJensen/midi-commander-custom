@@ -150,6 +150,7 @@ static const int tag_l2_y = 63-9;
 static const int vline1_x = 31;
 static const int vline2_x = 31+28+5;
 static const int vline3_x = 31+28+5+28+5;
+
 void display_iax_display(disp_iax_t *data) {
 
   draw_fill(Black);
@@ -237,6 +238,7 @@ static void display_prep_line(char *buf, uint8_t line, uint8_t pc) {
   indent += sprintf(&(buf[indent]),"%d", pc);
   buf[indent] = 0;
 }
+
 // Draw a pixel in every corner to verify alignment of display buffer
 static void display_test() {
   ssd1306_Fill(Black);

@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-enum event_type_e {EVENT_BUTTON_PRESS, EVENT_BUTTON_RELEASE, EVENT_BUTTON_LONG};
+enum event_type_e {EVENT_BUTTON_PRESS, EVENT_BUTTON_RELEASE, EVENT_BUTTON_HOLD};
 
 typedef struct {
     uint8_t type;

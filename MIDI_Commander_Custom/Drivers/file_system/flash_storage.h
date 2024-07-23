@@ -59,10 +59,7 @@ typedef struct {
 /****************************************
  * Public functions 
  ***************************************/
-int flash_storage_init(uintptr_t flash_start, flash_write_short single, flash_write_blob blob, flash_erase_page erase);
-int flash_storage_write(uint16_t addr, uint8_t *data, uint16_t size);
-// int fs_read_preset(uint16_t v_addr, uint8_t *data);
-// int fs_write_preset(fs_memory_setup_t *fs_p, int nr, uint8_t *data);
+int fs_initialize_page(fs_memory_setup_t *fs_p);
 int fs_read_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data);
 int fs_write_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data);
 
@@ -73,7 +70,6 @@ int fs_write_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data);
 
 fs_memory_setup_t* fs_setup_memory(uintptr_t flash_start, flash_write_short single, flash_write_blob blob, flash_erase_page erase);
 
-int fs_initialize_page(fs_memory_setup_t *fs_p);
 int fs_init_erased(fs_memory_setup_t *fs_p, uintptr_t page_0, uintptr_t page_1, uint16_t page_0_status, uint16_t page_1_status);
 int fs_init_valid(fs_memory_setup_t *fs_p, uint32_t page_0, uint32_t page_1, uint16_t page_0_status, uint16_t page_1_status);
 int fs_init_receive(fs_memory_setup_t *fs_p, uint32_t page_0, uint32_t page_1, uint16_t page_0_status, uint16_t page_1_status);

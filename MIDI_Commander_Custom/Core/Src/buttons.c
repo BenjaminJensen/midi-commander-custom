@@ -5,11 +5,18 @@
  *      Author: ben
  */
 
+/****************************************
+ * Includes
+ ***************************************/
 #include "buttons.h"
 #include "event.h"
 
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_gpio.h"
+
+/****************************************
+ * Defines & Constants
+ ***************************************/
 
 // USB pins
 #define USB_ID_Pin GPIO_PIN_12
@@ -32,11 +39,16 @@ typedef struct {
 	const GPIO_TypeDef* port;
 	const uint16_t pin;
 	enum button_state_e state;
-
+	uint16_t hold_time;
 } button_debounce_t;
 
 #define NUM_BUT (10)
+
+/****************************************
+ * Private data
+ ***************************************/
 const int debounce_threshold = 5;
+const uint16_t max_hold_time = 2000 / 10; // 2000 ms divided på 10 ms (scan time)
 
 const int num_buttons = NUM_BUT;
 static button_debounce_t buttons[NUM_BUT] = {
@@ -101,14 +113,15 @@ static button_debounce_t buttons[NUM_BUT] = {
     .state = BUTTON_RELEASED
   }
 };
-/*
+
+/****************************************
  * Private declarations
- */
+ ****************************************/
 static void buttons_gpio_init(void);
 
-/*
+/****************************************
  * Public functions
- */
+ ****************************************/
 void buttons_init() {
 	buttons_gpio_init();
 
@@ -117,6 +130,11 @@ void buttons_init() {
 	}
 }
 
+/*
+ * @brief Button scanning function
+ *
+ * Should be called every 10ms
+ */
 uint16_t buttons_scan() {
 	uint16_t button_state = 0;
   event_t e;
@@ -132,8 +150,19 @@ uint16_t buttons_scan() {
     }
     // Evaluate state (4 consecutive positive reads)
     if((buttons[i].cnt & 0x0F) == 0x0F) {
+      if(buttons[i].hold_time < max_hold_time) {
+        buttons[i].hold_time++;
+        if(buttons[i].hold_time >= max_hold_time) {
+          // Hold button event
+          buttons[i].state = BUTTON_HOLD;
+          e.event.type = EVENT_BUTTON_HOLD;
+          e.event.data0 = i;
+          event_put(e);
+        }
+
+      }
       // Button push
-      if(buttons[i].state != BUTTON_PRESSED) {
+      if(buttons[i].state != BUTTON_PRESSED && buttons[i].state != BUTTON_HOLD) {
         buttons[i].state = BUTTON_PRESSED;
         e.event.type = EVENT_BUTTON_PRESS;
         e.event.data0 = i;
@@ -145,6 +174,8 @@ uint16_t buttons_scan() {
       // release
       if(buttons[i].state != BUTTON_RELEASED) {
         buttons[i].state = BUTTON_RELEASED;
+        // Reset the "hold" time keeper
+        buttons[i].hold_time = 0;
         e.event.type = EVENT_BUTTON_RELEASE;
         e.event.data0 = i;
         event_put(e);
@@ -154,9 +185,10 @@ uint16_t buttons_scan() {
 
 	return button_state;
 }
-/*
+
+/****************************************
  * Private functions
- */
+ ***************************************/
 
 /**
   * @brief GPIO Initialization Function

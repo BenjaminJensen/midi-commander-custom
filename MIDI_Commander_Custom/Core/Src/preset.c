@@ -11,10 +11,9 @@
 #include "preset.h"
 #include "midi.h"
 #include "settings.h"
-#include <stdio.h>
-#include "SEGGER_RTT.h"
 #include "display.h"
 #include "event.h"
+#include "../interfaces/logging.h"
 
 /****************************************
  * Private types and variables
@@ -65,6 +64,7 @@ void preset_init() {
   settings_init();
   event_handler_register(EVENT_BUTTON_PRESS, &preset_process_event);
   event_handler_register(EVENT_BUTTON_RELEASE, &preset_process_event);
+  event_handler_register(EVENT_BUTTON_HOLD, &preset_process_event);
 }
 
 /****************************************
@@ -197,6 +197,10 @@ static int preset_process_event(event_t e) {
  * @brief Button handler for state "preset"
  */
 static void preset_handle_preset(event_t e) {
+  if(e.event.type == EVENT_BUTTON_HOLD) {
+    log_msg("Preset: HOLD(%d)\n", e.event.data0);
+  }
+
   switch(e.event.data0) {
     case 0:
       if(e.event.type == EVENT_BUTTON_PRESS) {
@@ -387,11 +391,8 @@ static void preset_page_next() {
     default:
       break;
   }
-  char buf[16];
-  int num;
-  num = sprintf(buf, "Next Page:%d\n", preset_state);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+
+  log_msg("Next Page:%d\n", preset_state);
 }
 /*
  * @brief Handle IA button press
@@ -443,12 +444,7 @@ static void preset_bank_up() {
   }
 
   // Debug
-  char buf[32];
-  int num;
-
-  num = sprintf(buf, "Bank up c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  log_msg("Bank up c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
 }
 
 /*
@@ -470,12 +466,7 @@ static void preset_bank_down() {
   }
 
   // Debug
-  char buf[32];
-  int num;
-
-  num = sprintf(buf, "Bank down c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  log_msg("Bank down c:%d n:%d\r\n", preset_bank_current, preset_bank_next);
 }
 
 /*
@@ -496,7 +487,7 @@ static void preset_load_relativ(uint8_t nr) {
     //SEGGER_RTT_printf(0, "Load preset(%d)\r\n", new_preset);
   }
   else {
-    SEGGER_RTT_printf(0, "Load preset(%d) failed!\r\n", new_preset);
+    log_msg("Load preset(%d) failed!\r\n", new_preset);
   }
 }
 /*
@@ -537,12 +528,7 @@ static void ia_on (uint8_t nr) {
   }
 
   // Debug
-  char buf[16];
-  int num;
-
-  num = sprintf(buf, "IA on(%d)\r\n", nr);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  log_msg("IA on(%d)\r\n", nr);
 }
 /*
  * @brief Set IA state to OFF
@@ -567,10 +553,5 @@ static void ia_off (uint8_t nr) {
   }
 
   // Debug
-  char buf[16];
-  int num;
-
-  num = sprintf(buf, "IA off(%d)\r\n", nr);
-  buf[num] = 0;
-  SEGGER_RTT_WriteString(0, buf);
+  log_msg("IA off(%d)\r\n", nr);
 }
