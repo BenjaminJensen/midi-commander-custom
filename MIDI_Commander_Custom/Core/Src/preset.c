@@ -74,6 +74,7 @@ void preset_init() {
 /****************************************
  * Private functions
  ***************************************/
+
 /*
  * @brief Compares preset as loaded from memory with current state of preset
  */
@@ -91,6 +92,7 @@ static uint8_t preset_edited() {
   }
   return edited;
 }
+
 /*
  * @brief Update display on "Preset" page
  */
@@ -114,9 +116,14 @@ static void preset_update_display() {
 
   display_show_preset(&p);
 }
+
+/*
+ * @brief update display with bank info
+ */
 static void preset_bank_display(int bank) {
   display_bank_display(bank);
 }
+
 /*
  * @brief Event handler for all button events
  */
@@ -193,7 +200,7 @@ static int preset_process_event(event_t e) {
        preset_bank_display(preset_bank_next);
        break;
      case PS_PC:
-       display_preset_pc(0, 0);
+       display_preset_pc(preset_selected_pc, preset_current.pc[preset_selected_pc]);
        break;
      default:
        break;
@@ -201,6 +208,7 @@ static int preset_process_event(event_t e) {
 
   return 0;
 }
+
 /*
  * @brief Button handler for state "preset"
  */
@@ -277,6 +285,7 @@ static void preset_handle_preset(event_t e) {
       break;
   }
 }
+
 /*
  * @brief Button handler for "bank" state
  */
@@ -382,10 +391,9 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
 }
 
 /*
- *
+ * @handle Program Change edit mode in preset
  */
 static void preset_handle_pc(event_t e) {
-  log_msg("Handle PC\n");
   if(preset_selected_pc > 4) {
     log_msg("WARNING(preset_handle_pc): out of range[%d]", preset_selected_pc);
     preset_selected_pc = 0;
@@ -454,11 +462,11 @@ static void preset_handle_pc(event_t e) {
      log_msg("ERROR(preset_handle_pc): unknown data0 element(%d) \n", e.event.data0);
      break;
   }
-  log_msg("preset_handle_pc: pc%d = %d\n", preset_selected_pc, preset_current.pc[preset_selected_pc]);
+  //log_msg("preset_handle_pc: pc%d = %d\n", preset_selected_pc, preset_current.pc[preset_selected_pc]);
 }
 
 /*
- *
+ * @brief Next preset page event handler
  */
 static void preset_page_next() {
   switch(preset_state) {

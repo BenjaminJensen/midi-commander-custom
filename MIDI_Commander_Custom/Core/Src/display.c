@@ -219,11 +219,44 @@ void display_iax_display(disp_iax_t *data) {
  */
 
 void display_preset_pc(uint8_t nr, uint8_t val) {
+  char buf[18];
+  int len;
+
   draw_fill(Black);
 
-  // Draw top section
-  draw_string("Program Change", 0, 0, &font_robot10);
+
+  // Draw title
+  len = sprintf(buf,"PC%d", nr);
+  buf[len] = 0;
+  draw_string(buf, 0, 0, &font_robot10);
+
+  // Draw value
+  len = sprintf(buf,"PC%d:%d", nr, val);
+  buf[len] = 0;
+  ssd1306_SetCursor(0, 10+9);
+  ssd1306_WriteString(buf, Font_16x26, White);
+  //draw_string(buf, 0, 20, &font_robot10);
+
+  // Indicate display update is needed
   need_update = 1;
+
+  // Update LEDS
+  led_all_off();
+  if(nr == 0) {
+    leds_set_led(5, LED_ON);
+  }
+  else if(nr == 1) {
+    leds_set_led(6, LED_ON);
+  }
+  else if(nr == 2) {
+    leds_set_led(7, LED_ON);
+  }
+  else if(nr == 3) {
+    leds_set_led(8, LED_ON);
+  }
+  else if(nr == 4) {
+    leds_set_led(9, LED_ON);
+  }
 }
 
 /****************************************
