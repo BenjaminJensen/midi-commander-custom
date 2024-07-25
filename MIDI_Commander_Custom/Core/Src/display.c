@@ -213,6 +213,19 @@ void display_iax_display(disp_iax_t *data) {
     leds_set_led(5, LED_BLINK);
   }
 }
+
+/*
+ *
+ */
+
+void display_preset_pc(uint8_t nr, uint8_t val) {
+  draw_fill(Black);
+
+  // Draw top section
+  draw_string("Program Change", 0, 0, &font_robot10);
+  need_update = 1;
+}
+
 /****************************************
  * Private functions
  ***************************************/

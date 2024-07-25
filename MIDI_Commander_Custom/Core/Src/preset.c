@@ -30,7 +30,7 @@ static uint8_t preset_number_abs_current = 0;
 static uint8_t preset_bank_current = 0;
 static uint8_t preset_bank_next = 0;
 
-enum preset_state_e {PS_PRESET, PS_IA0, PS_IA1, PS_IA2, PS_BANK};
+enum preset_state_e {PS_PRESET, PS_IA0, PS_IA1, PS_IA2, PS_BANK, PS_PC};
 static enum preset_state_e preset_state = PS_PRESET;
 
 /****************************************
@@ -53,6 +53,7 @@ static void preset_handle_bank(event_t e);
 static void preset_page_next(void);
 static void preset_handle_ia(event_t e, uint8_t offset);
 static uint8_t preset_edited(void);
+static void preset_handle_pc(event_t e);
 
 /****************************************
  * Public functions
@@ -137,6 +138,9 @@ static int preset_process_event(event_t e) {
     case PS_BANK:
       preset_handle_bank(e);
       break;
+    case PS_PC:
+      preset_handle_pc(e);
+      break;
     default:
       break;
   }
@@ -187,6 +191,9 @@ static int preset_process_event(event_t e) {
      case PS_BANK:
        preset_bank_display(preset_bank_next);
        break;
+     case PS_PC:
+       display_preset_pc(0, 0);
+       break;
      default:
        break;
    }
@@ -232,7 +239,10 @@ static void preset_handle_preset(event_t e) {
       }
       break;
     case 4:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
+      if(e.event.type == EVENT_BUTTON_HOLD) {
+        preset_state = PS_PC;
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_bank_up();
       }
       break;
@@ -257,7 +267,7 @@ static void preset_handle_preset(event_t e) {
       }
       break;
     case 9:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_bank_down();
       }
       break;
@@ -371,6 +381,14 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
     }
   }
 }
+
+/*
+ *
+ */
+static void preset_handle_pc(event_t e) {
+  log_msg("Handle PC\n");
+}
+
 /*
  *
  */
