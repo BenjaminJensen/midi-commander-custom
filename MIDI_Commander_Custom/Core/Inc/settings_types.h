@@ -47,11 +47,7 @@ typedef struct {
 // Preset
 typedef struct __attribute__((packed)){
   uint16_t crc;
-  uint8_t pc0;
-  uint8_t pc1;
-  uint8_t pc2;
-  uint8_t pc3;
-  uint8_t pc4;
+  uint8_t pc[5];
   uint8_t ia0_7;
   uint8_t ia8_15;
   uint8_t ia16_23;

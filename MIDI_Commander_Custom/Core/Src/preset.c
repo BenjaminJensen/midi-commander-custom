@@ -14,6 +14,7 @@
 #include "display.h"
 #include "event.h"
 #include "../interfaces/logging.h"
+#include "menu_modifier.h"
 
 /****************************************
  * Private types and variables
@@ -29,6 +30,8 @@ static uint8_t preset_number_current = 0;
 static uint8_t preset_number_abs_current = 0;
 static uint8_t preset_bank_current = 0;
 static uint8_t preset_bank_next = 0;
+static uint8_t preset_selected_pc = 0;
+static uint8_t preset_suppress_events = 0;
 
 enum preset_state_e {PS_PRESET, PS_IA0, PS_IA1, PS_IA2, PS_BANK, PS_PC};
 static enum preset_state_e preset_state = PS_PRESET;
@@ -94,11 +97,9 @@ static uint8_t preset_edited() {
 static void preset_update_display() {
   disp_preset_t p;
   p.bank = preset_bank_current;
-  p.pc[0] = preset_current.pc0;
-  p.pc[1] = preset_current.pc1;
-  p.pc[2] = preset_current.pc2;
-  p.pc[3] = preset_current.pc3;
-  p.pc[4] = preset_current.pc4;
+
+  for(int i = 0; i < 5; i++)
+    p.pc[i] = preset_current.pc[i];
 
   p.leds = 0;
   // Set LED states
@@ -241,6 +242,7 @@ static void preset_handle_preset(event_t e) {
     case 4:
       if(e.event.type == EVENT_BUTTON_HOLD) {
         preset_state = PS_PC;
+        preset_suppress_events = 1;
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_bank_up();
@@ -281,7 +283,7 @@ static void preset_handle_preset(event_t e) {
 static void preset_handle_bank(event_t e) {
   switch(e.event.data0) {
     case 4:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_bank_up();
       }
       break;
@@ -306,7 +308,7 @@ static void preset_handle_bank(event_t e) {
       }
       break;
     case 9:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_bank_down();
       }
       break;
@@ -343,11 +345,8 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
 
         //preset_current.crc = 1 + preset_number_abs_current * 4;
 
-        preset_current.pc0 = 1 + preset_number_abs_current * 4;
-        preset_current.pc1 = 2 + preset_number_abs_current * 4;
-        preset_current.pc2 = 3 + preset_number_abs_current * 4;
-        preset_current.pc3 = 4 + preset_number_abs_current * 4;
-        preset_current.pc4 = 5 + preset_number_abs_current * 4;
+        for(int k = 0; k < 5; k++)
+          preset_current.pc[k] = k + 1 + preset_number_abs_current * 4;
         /*
         preset_current.ia0_7 = 7;
         preset_current.ia8_15 = 8;
@@ -387,6 +386,75 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
  */
 static void preset_handle_pc(event_t e) {
   log_msg("Handle PC\n");
+  if(preset_selected_pc > 4) {
+    log_msg("WARNING(preset_handle_pc): out of range[%d]", preset_selected_pc);
+    preset_selected_pc = 0;
+  }
+  switch(e.event.data0) {
+    case 0: // -1
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        mm8_sub1(&(preset_current.pc[preset_selected_pc]), 0);
+      }
+      break;
+    case 1: // +1
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        mm8_add1(&(preset_current.pc[preset_selected_pc]), 127);
+      }
+      break;
+    case 2: // -10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        mm8_sub10(&(preset_current.pc[preset_selected_pc]), 0);
+      }
+      break;
+    case 3: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        mm8_add10(&(preset_current.pc[preset_selected_pc]), 127);
+      }
+      break;
+    case 4:
+      // EXIT
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
+        if(preset_suppress_events == 0)
+          preset_state = PS_PRESET;
+        else
+          preset_suppress_events = 0;
+      }
+      break;
+
+    case 5: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_selected_pc = 0;
+      }
+      break;
+
+    case 6: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_selected_pc = 1;
+      }
+      break;
+
+    case 7: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_selected_pc = 2;
+      }
+      break;
+
+    case 8: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_selected_pc = 3;
+      }
+      break;
+
+    case 9: // +10
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_selected_pc = 4;
+      }
+      break;
+    default:
+     log_msg("ERROR(preset_handle_pc): unknown data0 element(%d) \n", e.event.data0);
+     break;
+  }
+  log_msg("preset_handle_pc: pc%d = %d\n", preset_selected_pc, preset_current.pc[preset_selected_pc]);
 }
 
 /*
