@@ -20,13 +20,14 @@
  /****************************************
   * Local variables
   ***************************************/
-static settings_t const *settings_current = 0 ;
+static settings_t settings_current = {0} ;
 
 /****************************************
  * Private function declarations
  ***************************************/
 
 static int settings_preset_nr_to_addr(uint8_t nr);
+static void settings_load_system();
 
 /****************************************
  * Public functions
@@ -37,7 +38,8 @@ static int settings_preset_nr_to_addr(uint8_t nr);
 void settings_init() {
 
   file_system_init();
-  settings_current = get_settings_factory();
+  settings_load_system();
+  //settings_current = get_settings_factory();
   // validate loaded settings
   // if not valid
   //    Load factory settings
@@ -48,7 +50,7 @@ void settings_init() {
 int settings_get_ia(uint8_t nr, ia_t const**ia) {
   int error = 0;
   if(nr < NUM_IA) {
-    *ia = &(settings_current->ias[nr]);
+    *ia = &(settings_current.ias[nr]);
   }
   else {
     ia = 0;
@@ -81,7 +83,7 @@ int settings_load_preset(int nr, preset_t* preset) {
  */
 int settings_save_preset(int nr, preset_t* preset) {
   int error = 0;
-  uint16_t addr;
+  uint16_t addr = 0;
 
   log_msg("Write preset\naddr: %d, nr: %d, crc: %x\n", addr, nr, preset->crc);
 
@@ -91,6 +93,29 @@ int settings_save_preset(int nr, preset_t* preset) {
 /****************************************
  * Private function declarations
  ***************************************/
+
+/*
+ * @brief Load system setting from memory or write and load default
+ */
+static void settings_load_system() {
+  int error;
+  error = file_system_load_settings(&settings_current);
+  if(error != 0) {
+    // Unable to load system settings
+    // File does not exist, write default settings
+    if(error == -2) {
+      file_system_store_settings((settings_t*)get_settings_factory());
+      error = file_system_load_settings(&settings_current);
+    }
+    if(error != 0) {
+      log_msg("settings_load_system: FATAL ERROR\n", error);
+      while(1);
+    }
+  }
+  if(error == 0) {
+    log_msg("System settings loaded(%X)\n", error);
+  }
+}
 
 /*
  *

@@ -25,8 +25,8 @@ static const uint32_t page_size_def = 2048;
 static fs_memory_setup_t settings_memory = {
     .page_size = page_size_def,
     .storage_start = FLASH_START,
-    .page0 = (FLASH_START + page_size_def*1),
-    .page1 = (FLASH_START + page_size_def*2),
+    .page0 = (FLASH_START + page_size_def*0),
+    .page1 = (FLASH_START + page_size_def*1),
     .var_size = sizeof(settings_t),
     .blob = &flash_wrapper_write_flash_blob,
     .write = &flash_wrapper_write_flash,
@@ -37,8 +37,8 @@ static fs_memory_setup_t settings_memory = {
 static fs_memory_setup_t preset_memory0 = {
     .page_size = page_size_def,
     .storage_start = FLASH_START,
-    .page0 = (FLASH_START + page_size_def*3),
-    .page1 = (FLASH_START + page_size_def*4),
+    .page0 = (FLASH_START + page_size_def*2),
+    .page1 = (FLASH_START + page_size_def*3),
     .var_size = sizeof(preset_t),
     .blob = &flash_wrapper_write_flash_blob,
     .write = &flash_wrapper_write_flash,
@@ -49,8 +49,8 @@ static fs_memory_setup_t preset_memory0 = {
 static fs_memory_setup_t preset_memory1 = {
     .page_size = page_size_def,
     .storage_start = FLASH_START,
-    .page0 = (FLASH_START + page_size_def*5),
-    .page1 = (FLASH_START + page_size_def*6),
+    .page0 = (FLASH_START + page_size_def*4),
+    .page1 = (FLASH_START + page_size_def*5),
     .var_size = sizeof(preset_t),
     .blob = &flash_wrapper_write_flash_blob,
     .write = &flash_wrapper_write_flash,
@@ -64,6 +64,7 @@ static fs_memory_setup_t preset_memory1 = {
 
 static void file_system_memory_setup();
 static fs_memory_setup_t* file_system_get_preset_setup(uint16_t nr);
+static void file_system_erase_memory();
 
 /****************************************
  * Public functions
@@ -75,10 +76,15 @@ void file_system_init() {
     log_msg("ERROR: Too many presets pr page!\n");
   }
 
-  file_sys_init();
+  // Erase and format memory
+  //file_system_erase_memory();
+
+  // Test functions
+  //file_sys_init();
 
   file_system_memory_setup();
 }
+
 /*
  *
  */
@@ -170,9 +176,32 @@ static void file_system_test() {
   // TEST END
 }
 
+/*
+ *
+ */
+static void file_system_erase_memory() {
+  log_msg("Format system: %X, %X\n", settings_memory.page0, settings_memory.page1);
+  fs_format(&settings_memory, settings_memory.page0, settings_memory.page1);
+
+  log_msg("Format preset0: %X, %X\n", preset_memory0.page0, preset_memory0.page1);
+  fs_format(&preset_memory0, preset_memory0.page0, preset_memory0.page1);
+
+  log_msg("Format preset1: %X, %X\n", preset_memory1.page0, preset_memory1.page1);
+  fs_format(&preset_memory1, preset_memory1.page0, preset_memory1.page1);
+}
+
+/*
+ *
+ */
 static void file_system_memory_setup() {
   // System settings memory
   fs_initialize_page(&settings_memory);
+
+  // Preset0 memory
+  fs_initialize_page(&preset_memory0);
+
+  // Preset1 memory
+  fs_initialize_page(&preset_memory1);
 
   // Preset memory
   // TODO: setup

@@ -183,9 +183,14 @@ int fs_read_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data) {
   // Find variable
   uintptr_t var_addr = fs_locate_variable(fs_p, page, v_addr, fs_p->var_size);
 
-  // copy data
-  error = fs_p->read(var_addr, data, fs_p->var_size);
-
+  if(var_addr != 0) {
+    // copy data
+    error = fs_p->read(var_addr, data, fs_p->var_size);
+  }
+  else {
+    log_msg("fs_read_variable: variable not found!\n");
+    error = -2;
+  }
   return error;
 }
 
