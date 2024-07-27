@@ -12,6 +12,7 @@
 #include "display.h"
 #include "draw.h"
 #include "leds.h"
+#include "../interfaces/logging.h"
 
 static uint8_t need_update = 0;
 static I2C_HandleTypeDef *hi2c1_;
@@ -228,7 +229,7 @@ void display_iax_display(disp_iax_t *data) {
  *
  */
 
-void display_preset_pc(uint8_t nr, uint8_t val) {
+void display_preset_pc(uint8_t nr, uint8_t val, char const* name) {
   char buf[18];
   int len;
 
@@ -236,9 +237,18 @@ void display_preset_pc(uint8_t nr, uint8_t val) {
 
 
   // Draw title
-  len = sprintf(buf,"PC%d", nr);
-  buf[len] = 0;
-  draw_string(buf, 0, 0, &font_robot10);
+  //len = sprintf(buf,"PC%d", nr);
+  //buf[len] = 0;
+
+  // Ensure title is terminated within 16 chars
+  for(int i = 0; i < 16; i++) {
+    if(i == 15)
+      log_msg("ERROR(display_preset_pc): name length overflow!");
+    if(name[i] == 0) {
+      break;
+    }
+  }
+  draw_string(name, 0, 0, &font_robot10);
 
   // Draw value
   len = sprintf(buf,"PC%d:%d", nr, val);

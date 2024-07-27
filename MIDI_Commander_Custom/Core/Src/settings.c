@@ -44,10 +44,11 @@ void settings_init() {
   // if not valid
   //    Load factory settings
 }
+
 /*
  * @brief Get the settings for a specific IA
  */
-int settings_get_ia(uint8_t nr, ia_t const**ia) {
+int settings_get_ia(uint8_t nr, ia_t const** ia) {
   int error = 0;
   if(nr < NUM_IA) {
     *ia = &(settings_current.ias[nr]);
@@ -58,35 +59,62 @@ int settings_get_ia(uint8_t nr, ia_t const**ia) {
   }
   return error;
 }
+
+/*
+ * @brief Get the settings for a specific PC
+ */
+int settings_get_pc(uint8_t nr, pc_t const** pc) {
+  int error = 0;
+  if(nr < NUM_PC) {
+    *pc = &(settings_current.pcs[nr]);
+  }
+  else {
+    pc = 0;
+    error = -1;
+  }
+  return error;
+}
+
 /*
  * @brief Load a preset from the designated number
  */
 int settings_load_preset(int nr, preset_t* preset) {
   int error = 0;
-  int addr;
   uint16_t crc = 0;
-  addr = settings_preset_nr_to_addr(nr);
 
-  //flash_storage_read(addr, (uint8_t*)preset, 10);
-  //hal_eeprom_bulk_read(addr, (uint8_t*)preset, 10);
-  crc = crc16_calc((uint8_t*)preset + 2, 8);
-  log_msg("settings_load_preset: nr: %d, addr: %d\n", nr, addr);
-  if(crc != preset->crc) {
-    error = -1;
-    //hal_dump_mem((uint8_t*)preset, 10);
-    log_msg("Load preset(crc error) load: %d != %d\n", preset->crc, crc);
+  error = file_system_load_preset(nr, preset);
+  if(error == 0) {
+    log_msg("Loading preset(%d), CRC: %x\n", nr, preset->crc);
+    crc = crc16_calc((uint8_t*)preset + 2, sizeof(preset_t) - 2);
+
+    if(crc != preset->crc) {
+      error = -1;
+      log_msg("Load preset(CRC error) load: %d != %d\n", preset->crc, crc);
+    }
   }
+  else if(error != -2) { // Disregard missing preset
+    log_msg("ERROR(settings_load_preset): unable to load preset(%d)\n", error);
+  }
+
   return error;
 }
+
 /*
  * @brief Save a preset to the designated number
  */
 int settings_save_preset(int nr, preset_t* preset) {
   int error = 0;
-  uint16_t addr = 0;
 
-  log_msg("Write preset\naddr: %d, nr: %d, crc: %x\n", addr, nr, preset->crc);
+  preset->crc = crc16_calc((uint8_t*)preset + 2, sizeof(preset_t) - 2);
 
+  error = file_system_store(nr, preset);
+
+  if(error == 0) {
+    log_msg("Write preset: nr: %d, crc: %x\n", nr, preset->crc);
+  }
+  else {
+    log_msg("ERROR(settings_save_preset): unable to save preset(%d)\n", error);
+  }
 
   return error;
 }

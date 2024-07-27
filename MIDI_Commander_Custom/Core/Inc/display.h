@@ -43,6 +43,6 @@ void display_show_preset(disp_preset_t *preset);
 void display_update(void);
 void display_bank_display(int bank);
 void display_iax_display(disp_iax_t *data);
-void display_preset_pc(uint8_t nr, uint8_t val);
+void display_preset_pc(uint8_t nr, uint8_t val, char const* name);
 
 #endif /* INC_DISPLAY_H_ */

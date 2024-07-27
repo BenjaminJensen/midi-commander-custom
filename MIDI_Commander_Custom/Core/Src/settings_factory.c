@@ -13,26 +13,31 @@ static const settings_t settings_factory = {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 0,
+       .name = "Default PC0",
      },
      {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 1,
+       .name = "Default PC1",
      },
      {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 2,
+       .name = "Default PC2",
      },
      {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 3,
+       .name = "Default PC3",
      },
      {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 4,
+       .name = "Default PC4",
      },
   },
   .ias = {

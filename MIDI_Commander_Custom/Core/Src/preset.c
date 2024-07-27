@@ -159,7 +159,9 @@ static int preset_process_event(event_t e) {
   data.leds = 0;
   data.edited = preset_edited();
 
-  ia_t const*ia = 0;
+  ia_t const* ia = 0;
+
+  pc_t const* pc = 0;
   // Show resulting state
   switch(preset_state) {
      case PS_PRESET:
@@ -202,7 +204,11 @@ static int preset_process_event(event_t e) {
        preset_bank_display(preset_bank_next);
        break;
      case PS_PC:
-       display_preset_pc(preset_selected_pc, preset_current.pc[preset_selected_pc]);
+       settings_get_pc(preset_selected_pc, &pc);
+       display_preset_pc(
+           preset_selected_pc,
+           preset_current.pc[preset_selected_pc],
+           pc->name);
        break;
      default:
        break;
@@ -364,7 +370,7 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
       ia_num = 7;
       break;
     case 9:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
+      if(e.event.type == EVENT_BUTTON_HOLD) {
         settings_save_preset(preset_number_abs_current, &preset_current);
       }
       break;
@@ -556,24 +562,46 @@ static void preset_bank_down() {
 }
 
 /*
+ *
+ */
+
+static void preset_clear(preset_t *preset) {
+  preset->crc = 0;
+  for(int i = 0; i < NUM_PC; i++)
+    preset->pc[i] = 0;
+  preset->ia0_7 = 0;
+  preset->ia8_15 = 0;
+  preset->ia16_23 = 0;
+}
+/*
  * @brief Loads preset relative to current "bank"
  */
 static void preset_load_relativ(uint8_t nr) {
   uint8_t new_preset = 0;
+  int error = 0;
+
+  error = settings_load_preset(nr, &preset_current);
+
   if(nr < preset_pr_bank) {
     new_preset = (preset_bank_next * preset_pr_bank) + nr;
     preset_number_current = nr;
     preset_number_abs_current = new_preset;
   }
-  if(settings_load_preset(nr, &preset_current) == 0) {
+
+  if(error == 0) {
     // update bank number
     preset_bank_current = preset_bank_next;
     preset_state = PS_PRESET;
     // Debug
     //SEGGER_RTT_printf(0, "Load preset(%d)\r\n", new_preset);
   }
+  else if(error == -2) { // No saved preset
+    // Reset preset
+    preset_clear(&preset_current);
+    log_msg("preset_load_relativ: preset(%d) not available\n", preset_number_abs_current);
+  }
   else {
-    log_msg("Load preset(%d) failed!\r\n", new_preset);
+    log_msg("ERROR(preset_load_relativ): Load preset(%d) failed(%d)!\r\n", new_preset, error);
   }
 }
 /*

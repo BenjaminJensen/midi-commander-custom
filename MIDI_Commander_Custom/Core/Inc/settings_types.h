@@ -62,6 +62,7 @@ typedef struct {
   uint8_t pc;
   enum pc_mode_e mode:4;
   uint8_t chan:4;
+  char name[16];
 } pc_t;
 
 /*
