@@ -20,7 +20,7 @@
  * Private types and variables
  ***************************************/
 
-static const uint8_t preset_pr_bank = 4;
+static const uint8_t preset_pr_bank = 3;
 static const uint8_t preset_bank_max = 16; // 16 banks of 4 presets, total 64 presets
 #pragma pack(push,1)
 static preset_t preset_current = {0}; // Current state of current preamp
@@ -111,6 +111,8 @@ static void preset_update_display() {
     p.leds |= DISP_LED_IA1;
   if(preset_current.ia0_7 & 0x04)
     p.leds |= DISP_LED_IA2;
+  if(preset_current.ia0_7 & 0x08)
+    p.leds |= DISP_LED_IA3;
   // Riskey but works
   p.leds |= 1 << preset_number_current;
 
@@ -220,18 +222,13 @@ static void preset_handle_preset(event_t e) {
   switch(e.event.data0) {
     case 0:
       if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_page_next();
-      }
-      break;
-    case 1:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
         preset_ia(0, 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
         preset_ia(0, 0);
       }
       break;
-    case 2:
+    case 1:
       if(e.event.type == EVENT_BUTTON_PRESS) {
         preset_ia(1, 1);
       }
@@ -239,7 +236,7 @@ static void preset_handle_preset(event_t e) {
         preset_ia(1, 0);
       }
       break;
-    case 3:
+    case 2:
       if(e.event.type == EVENT_BUTTON_PRESS) {
         preset_ia(2, 1);
       }
@@ -247,15 +244,19 @@ static void preset_handle_preset(event_t e) {
         preset_ia(2, 0);
       }
       break;
-    case 4:
-      if(e.event.type == EVENT_BUTTON_HOLD) {
-        preset_state = PS_PC;
-        preset_suppress_events = 1;
+    case 3:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        preset_ia(3, 1);
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_up();
+        preset_ia(3, 0);
       }
       break;
+    case 4:
+       if(e.event.type == EVENT_BUTTON_PRESS) {
+         preset_page_next();
+       }
+       break;
     case 5:
       if(e.event.type == EVENT_BUTTON_PRESS) {
         preset_load_relativ(0);
@@ -272,13 +273,17 @@ static void preset_handle_preset(event_t e) {
       }
       break;
     case 8:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(3);
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_bank_down();
       }
       break;
     case 9:
-      if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_down();
+      if(e.event.type == EVENT_BUTTON_HOLD) {
+        preset_state = PS_PC;
+        preset_suppress_events = 1;
+      }
+      else if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_bank_up();
       }
       break;
     default:
@@ -291,11 +296,6 @@ static void preset_handle_preset(event_t e) {
  */
 static void preset_handle_bank(event_t e) {
   switch(e.event.data0) {
-    case 4:
-      if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_up();
-      }
-      break;
     case 5:
       if(e.event.type == EVENT_BUTTON_PRESS) {
         preset_load_relativ(0);
@@ -312,13 +312,13 @@ static void preset_handle_bank(event_t e) {
       }
       break;
     case 8:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_load_relativ(3);
+      if(e.event.type == EVENT_BUTTON_RELEASE) {
+        preset_bank_down();
       }
       break;
     case 9:
       if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_down();
+        preset_bank_up();
       }
       break;
     default:
@@ -332,49 +332,41 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
   uint8_t ia_num = 255;
 
   switch(e.event.data0) {
+
     case 0:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_page_next();
-      }
-      break;
-    case 1:
       ia_num = 0;
       break;
-    case 2:
+    case 1:
       ia_num = 1;
       break;
-    case 3:
+    case 2:
       ia_num = 2;
       break;
-    case 4:
+    case 3:
       ia_num = 3;
       break;
+    case 4:
+       if(e.event.type == EVENT_BUTTON_PRESS) {
+         preset_page_next();
+       }
+       break;
+
     case 5:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-
-        //preset_current.crc = 1 + preset_number_abs_current * 4;
-
-        for(int k = 0; k < 5; k++)
-          preset_current.pc[k] = k + 1 + preset_number_abs_current * 4;
-        /*
-        preset_current.ia0_7 = 7;
-        preset_current.ia8_15 = 8;
-        preset_current.ia16_23 = 9;
-        */
-        settings_save_preset(preset_number_abs_current, &preset_current);
-      }
-      break;
-    case 6:
       ia_num = 4;
       break;
-    case 7:
+    case 6:
       ia_num = 5;
       break;
-    case 8:
+    case 7:
       ia_num = 6;
       break;
-    case 9:
+    case 8:
       ia_num = 7;
+      break;
+    case 9:
+      if(e.event.type == EVENT_BUTTON_PRESS) {
+        settings_save_preset(preset_number_abs_current, &preset_current);
+      }
       break;
     default:
       break;

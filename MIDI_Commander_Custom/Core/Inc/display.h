@@ -10,7 +10,16 @@
 #include <stdint.h>
 #include "stm32f1xx_hal.h"
 
-enum disp_leds_e {DISP_LED_P0 = 0x01, DISP_LED_P1 = 0x02, DISP_LED_P2 = 0x04, DISP_LED_P3 = 0x08, DISP_LED_IA0 = 0x10, DISP_LED_IA1 = 0x20, DISP_LED_IA2 = 0x40};
+enum disp_leds_e {
+  DISP_LED_P0 = 0x01,
+  DISP_LED_P1 = 0x02,
+  DISP_LED_P2 = 0x04,
+  DISP_LED_P3 = 0x08,
+  DISP_LED_IA0 = 0x10,
+  DISP_LED_IA1 = 0x20,
+  DISP_LED_IA2 = 0x40,
+  DISP_LED_IA3 = 0x80
+};
 typedef struct {
   uint8_t pc[5];
   uint8_t bank;
