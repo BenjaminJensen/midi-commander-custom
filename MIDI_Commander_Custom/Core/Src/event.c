@@ -21,8 +21,6 @@ typedef struct {
 
 static fifo_handler_t event_queue_handle;
 static uint32_t event_queue_data[32];
-enum system_mode_e {MODE_PRESET, MODE_IA0, MODE_IA1};
-static enum system_mode_e system_mode = MODE_PRESET;
 #define EVENT_NUM_HANDLERS (8)
 static const int event_max_handlers = EVENT_NUM_HANDLERS;
 static int event_num_handlers = -1;

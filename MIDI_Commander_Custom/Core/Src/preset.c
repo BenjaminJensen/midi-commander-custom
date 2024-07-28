@@ -12,7 +12,6 @@
 #include "midi.h"
 #include "settings.h"
 #include "display.h"
-#include "event.h"
 #include "../interfaces/logging.h"
 #include "menu_modifier.h"
 
@@ -43,9 +42,6 @@ static enum preset_state_e preset_state = PS_PRESET;
 static void ia_on (uint8_t nr);
 static void ia_off (uint8_t nr);
 static uint8_t ia_get_state(uint8_t nr);
-static int preset_process_event(event_t e);
-static void preset_handle_preset(event_t e);
-
 static void preset_ia(uint8_t nr, uint8_t state);
 static void preset_bank_up(void);
 static void preset_bank_down(void);
@@ -57,6 +53,7 @@ static void preset_page_next(void);
 static void preset_handle_ia(event_t e, uint8_t offset);
 static uint8_t preset_edited(void);
 static void preset_handle_pc(event_t e);
+static void preset_handle_preset(event_t e);
 
 /****************************************
  * Public functions
@@ -66,70 +63,13 @@ static void preset_handle_pc(event_t e);
  */
 void preset_init() {
   settings_init();
-  event_handler_register(EVENT_BUTTON_PRESS, &preset_process_event);
-  event_handler_register(EVENT_BUTTON_RELEASE, &preset_process_event);
-  event_handler_register(EVENT_BUTTON_HOLD, &preset_process_event);
 }
 
-/****************************************
- * Private functions
- ***************************************/
-
-/*
- * @brief Compares preset as loaded from memory with current state of preset
- */
-static uint8_t preset_edited() {
-  uint8_t edited = 0;
-
-  if(preset_current.ia0_7 != preset_original.ia0_7) {
-    edited |= 1;
-  }
-  if(preset_current.ia8_15 != preset_original.ia8_15) {
-    edited |= 1;
-  }
-  if(preset_current.ia16_23 != preset_original.ia16_23) {
-    edited |= 1;
-  }
-  return edited;
-}
-
-/*
- * @brief Update display on "Preset" page
- */
-static void preset_update_display() {
-  disp_preset_t p;
-  p.bank = preset_bank_current;
-
-  for(int i = 0; i < 5; i++)
-    p.pc[i] = preset_current.pc[i];
-
-  p.leds = 0;
-  // Set LED states
-  if(preset_current.ia0_7 & 0x01)
-    p.leds |= DISP_LED_IA0;
-  if(preset_current.ia0_7 & 0x02)
-    p.leds |= DISP_LED_IA1;
-  if(preset_current.ia0_7 & 0x04)
-    p.leds |= DISP_LED_IA2;
-  if(preset_current.ia0_7 & 0x08)
-    p.leds |= DISP_LED_IA3;
-  // Riskey but works
-  p.leds |= 1 << preset_number_current;
-
-  display_show_preset(&p);
-}
-
-/*
- * @brief update display with bank info
- */
-static void preset_bank_display(int bank) {
-  display_bank_display(bank);
-}
 
 /*
  * @brief Event handler for all button events
  */
-static int preset_process_event(event_t e) {
+int preset_process_event(event_t e) {
 
   // Handle button presses
   switch(preset_state) {
@@ -215,6 +155,61 @@ static int preset_process_event(event_t e) {
    }
 
   return 0;
+}
+
+/****************************************
+ * Private functions
+ ***************************************/
+
+/*
+ * @brief Compares preset as loaded from memory with current state of preset
+ */
+static uint8_t preset_edited() {
+  uint8_t edited = 0;
+
+  if(preset_current.ia0_7 != preset_original.ia0_7) {
+    edited |= 1;
+  }
+  if(preset_current.ia8_15 != preset_original.ia8_15) {
+    edited |= 1;
+  }
+  if(preset_current.ia16_23 != preset_original.ia16_23) {
+    edited |= 1;
+  }
+  return edited;
+}
+
+/*
+ * @brief Update display on "Preset" page
+ */
+static void preset_update_display() {
+  disp_preset_t p;
+  p.bank = preset_bank_current;
+
+  for(int i = 0; i < 5; i++)
+    p.pc[i] = preset_current.pc[i];
+
+  p.leds = 0;
+  // Set LED states
+  if(preset_current.ia0_7 & 0x01)
+    p.leds |= DISP_LED_IA0;
+  if(preset_current.ia0_7 & 0x02)
+    p.leds |= DISP_LED_IA1;
+  if(preset_current.ia0_7 & 0x04)
+    p.leds |= DISP_LED_IA2;
+  if(preset_current.ia0_7 & 0x08)
+    p.leds |= DISP_LED_IA3;
+  // Riskey but works
+  p.leds |= 1 << preset_number_current;
+
+  display_show_preset(&p);
+}
+
+/*
+ * @brief update display with bank info
+ */
+static void preset_bank_display(int bank) {
+  display_bank_display(bank);
 }
 
 /*
@@ -580,13 +575,17 @@ static void preset_load_relativ(uint8_t nr) {
   uint8_t new_preset = 0;
   int error = 0;
 
-  error = settings_load_preset(nr, &preset_current);
-
   if(nr < preset_pr_bank) {
     new_preset = (preset_bank_next * preset_pr_bank) + nr;
     preset_number_current = nr;
     preset_number_abs_current = new_preset;
   }
+  else {
+    log_msg("ERROR(preset_load_relativ): nr() >= preset_pr_bank()\n", nr, preset_pr_bank);
+    log_msg("Loading preset '%d' instead\n", new_preset);
+  }
+
+  error = settings_load_preset(new_preset, &preset_current);
 
   if(error == 0) {
     // update bank number
