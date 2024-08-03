@@ -55,6 +55,8 @@ static uint8_t preset_edited(void);
 static void preset_handle_pc(event_t e);
 static void preset_handle_preset(event_t e);
 
+static void preset_send_midi(preset_t *preset);
+
 /****************************************
  * Public functions
  ***************************************/
@@ -591,8 +593,9 @@ static void preset_load_relativ(uint8_t nr) {
     // update bank number
     preset_bank_current = preset_bank_next;
     preset_state = PS_PRESET;
-    // Debug
-    //SEGGER_RTT_printf(0, "Load preset(%d)\r\n", new_preset);
+    log_msg("Loading preset '%d'\n", new_preset);
+    preset_send_midi(preset_t *preset);
+
   }
   else if(error == -2) { // No saved preset
     // Reset preset
@@ -609,14 +612,14 @@ static void preset_load_relativ(uint8_t nr) {
 static uint8_t ia_get_state(uint8_t nr) {
   uint8_t state = 0;
   if( nr < 8 ) {
-      state = (preset_current.ia0_7 & (1<<nr)) != 0 ? 1:0;
-    }
-    else if( nr < 16 ) {
-      state = (preset_current.ia8_15 & (1<< (nr - 8 ))) != 0 ? 1:0;
-    }
-    else if( nr < 24 ) {
-      state = (preset_current.ia16_23 & (1 << (nr - 16))) != 0 ? 1:0;
-    }
+    state = (preset_current.ia0_7 & (1<<nr)) != 0 ? 1:0;
+  }
+  else if( nr < 16 ) {
+    state = (preset_current.ia8_15 & (1<< (nr - 8 ))) != 0 ? 1:0;
+  }
+  else if( nr < 24 ) {
+    state = (preset_current.ia16_23 & (1 << (nr - 16))) != 0 ? 1:0;
+  }
   return state;
 }
 /*
@@ -667,4 +670,34 @@ static void ia_off (uint8_t nr) {
 
   // Debug
   log_msg("IA off(%d)\r\n", nr);
+}
+
+/*
+ * @brief sends preset MIDI data when a new preset is loaded
+ *
+ * NOTE: It will FIRST send Program Change followed by Continues Control
+ *       This is done to ensurer CC's can modify newly loaded presets on external units
+ */
+static void preset_send_midi(preset_t *preset) {
+   // Send Program Chaneg - PC
+  pc_t *pc_s;
+  for(int i = 0; i < NUM_PCM; i++) {
+    settings_get_pc(i, pc_s);
+    if(pc_s->mode == PC_MODE_ON) {
+      midi_send_pc(pc_s->chan, preset->pc[i]);
+    }
+  }
+
+  // Send Controller Change - CC
+  ia_t * ia_s;
+  for(int i = 0; i < NUM_CC; i++) {
+    settings_get_cc(i, cc_s);
+    if(ia_s->type == IA_TYPE_CC) {
+      midi_send_cc(ia_s->midi_chan, ia_s->midi_data0, ia_s->midi_data1);
+    }
+    else if(ia_s->type == IA_TYPE_PC) {
+      // TODO: Figure out how should work and implement
+      //midi_send_pc(pc_s->chan, );
+    }
+  }
 }

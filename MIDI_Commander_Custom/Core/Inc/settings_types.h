@@ -35,8 +35,8 @@ typedef struct {
   uint8_t state : 4;
   uint8_t midi_chan;
   uint8_t midi_data0;
-  uint8_t midi_data1;
-  uint8_t midi_data2;
+  uint8_t midi_data1; // CC ON value
+  uint8_t midi_data2; // CC OFF value
   char id[5];
 } ia_t;
 
