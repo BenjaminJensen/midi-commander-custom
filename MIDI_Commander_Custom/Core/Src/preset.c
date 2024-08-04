@@ -39,10 +39,11 @@ static enum preset_state_e preset_state = PS_PRESET;
  * Private functions prototypes
  ***************************************/
 
-static void ia_on (uint8_t nr);
-static void ia_off (uint8_t nr);
+static void ia_on (uint8_t nr, ia_t const*ia);
+static void ia_off (uint8_t nr, ia_t const*ia);
 static uint8_t ia_get_state(uint8_t nr);
-static void preset_ia(uint8_t nr, uint8_t state);
+static void ia_change_state(uint8_t nr, uint8_t state);
+
 static void preset_bank_up(void);
 static void preset_bank_down(void);
 static void preset_load_relativ(uint8_t nr);
@@ -215,6 +216,39 @@ static void preset_bank_display(int bank) {
 }
 
 /*
+ *
+ */
+static void preset_ia_button(uint8_t ia_nr, event_t e) {
+  ia_t const*ia = 0;
+  settings_get_ia(ia_nr, &ia);
+
+  if(e.event.type == EVENT_BUTTON_PRESS) {
+    // Handle latch mode
+    if(ia->mode == IA_MODE_LATCH) {
+      if(ia_get_state(ia_nr) == 0) {
+        ia_change_state(ia_nr, 1); // Current state==0 -> New State 1
+        ia_on(ia_nr, ia);
+      }
+      else {
+        ia_change_state(ia_nr, 0);// Current state==1 -> New State 0
+        ia_off(ia_nr, ia);
+      }
+    }
+    else if(ia->mode == IA_MODE_TOGGLE) {
+      // IA_MODE_TOGGLE always sets state on PRESS
+      ia_change_state(ia_nr, 1);
+      ia_on(ia_nr, ia);
+    }
+  }
+  else if(e.event.type == EVENT_BUTTON_RELEASE) {
+    if(ia->mode == IA_MODE_TOGGLE) {
+      // IA_MODE_TOGGLE always clears state on PRESS
+      ia_change_state(ia_nr, 0);
+      ia_off(ia_nr, ia);
+    }
+  }
+}
+/*
  * @brief Button handler for state "preset"
  */
 static void preset_handle_preset(event_t e) {
@@ -224,36 +258,16 @@ static void preset_handle_preset(event_t e) {
 
   switch(e.event.data0) {
     case 0:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(0, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(0, 0);
-      }
+      preset_ia_button(0, e);
       break;
     case 1:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(1, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(1, 0);
-      }
+      preset_ia_button(1, e);
       break;
     case 2:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(2, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(2, 0);
-      }
+      preset_ia_button(2, e);
       break;
     case 3:
-      if(e.event.type == EVENT_BUTTON_PRESS) {
-        preset_ia(3, 1);
-      }
-      else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_ia(3, 0);
-      }
+      preset_ia_button(3, e);
       break;
     case 4:
        if(e.event.type == EVENT_BUTTON_PRESS) {
@@ -376,12 +390,15 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
   }
   // If IA button, call handler
   if( ia_num != 255) {
+    preset_ia_button(ia_num + (8 * offset), e);
+    /*
     if(e.event.type == EVENT_BUTTON_PRESS) {
       preset_ia(ia_num + (8 * offset), 1);
     }
     else if(e.event.type == EVENT_BUTTON_RELEASE) {
       preset_ia(ia_num + (8 * offset), 0);
     }
+    */
   }
 }
 
@@ -483,36 +500,6 @@ static void preset_page_next() {
 
   log_msg("Next Page:%d\n", preset_state);
 }
-/*
- * @brief Handle IA button press
- */
-static void preset_ia(uint8_t nr, uint8_t state) {
-  ia_t const*ia = 0;
-  settings_get_ia(nr, &ia);
-  if(ia != 0) {
-    if(state == 1) {
-      // State on
-      if(ia->mode == IA_MODE_LATCH) {
-        if(ia_get_state(nr) == 0) {
-          ia_on(nr);
-        }
-        else {
-          ia_off(nr);
-        }
-      }
-      else if(ia->mode == IA_MODE_TOGGLE) {
-        ia_on(nr);
-      }
-      //
-    }
-    else {
-      // State of
-      if(ia->mode == IA_MODE_TOGGLE) {
-        ia_off(nr);
-      }
-    }
-  }
-}
 
 /*
  *  @brief Increases "bank" with one
@@ -566,6 +553,7 @@ static void preset_clear(preset_t *preset) {
   preset->crc = 0;
   for(int i = 0; i < NUM_PC; i++)
     preset->pc[i] = 0;
+
   preset->ia0_7 = 0;
   preset->ia8_15 = 0;
   preset->ia16_23 = 0;
@@ -594,7 +582,7 @@ static void preset_load_relativ(uint8_t nr) {
     preset_bank_current = preset_bank_next;
     preset_state = PS_PRESET;
     log_msg("Loading preset '%d'\n", new_preset);
-    preset_send_midi(preset_t *preset);
+    preset_send_midi(&preset_current);
 
   }
   else if(error == -2) { // No saved preset
@@ -604,6 +592,35 @@ static void preset_load_relativ(uint8_t nr) {
   }
   else {
     log_msg("ERROR(preset_load_relativ): Load preset(%d) failed(%d)!\r\n", new_preset, error);
+  }
+}
+/*
+ *
+ */
+static void ia_change_state(uint8_t nr, uint8_t state) {
+  uint8_t *reg = 0;
+  uint8_t mask = 0;
+
+  // Select reg and calc mask
+  if( nr < 8 ) {
+    reg = &(preset_current.ia0_7);
+    mask = 1 << nr;
+  }
+  else if( nr < 16 ) {
+    reg = &(preset_current.ia8_15);
+    mask = 1 << (nr - 8);
+  }
+  else if( nr < 24 ) {
+    reg = &(preset_current.ia16_23);
+    mask = 1 << (nr - 16);
+  }
+
+  // Update state
+  if(state == 0) {
+    *reg &= ~mask;
+  }
+  else {
+    *reg |= mask;
   }
 }
 /*
@@ -625,18 +642,7 @@ static uint8_t ia_get_state(uint8_t nr) {
 /*
  * @brief Set IA state to ON
  */
-static void ia_on (uint8_t nr) {
-  if( nr < 8 ) {
-    preset_current.ia0_7 |= (1<<nr);
-  }
-  else if( nr < 16 ) {
-    preset_current.ia8_15 |= ( 1 << (nr - 8) );
-  }
-  else if( nr < 24 ) {
-    preset_current.ia16_23 |= ( 1 << (nr - 16) );
-  }
-  ia_t const*ia = 0;
-  settings_get_ia(nr, &ia);
+static void ia_on (uint8_t nr, ia_t const*ia) {
   if(ia != 0) {
     if(ia->type == IA_TYPE_CC) {
         midi_send_cc(ia->midi_chan, ia->midi_data0, ia->midi_data1);
@@ -649,19 +655,7 @@ static void ia_on (uint8_t nr) {
 /*
  * @brief Set IA state to OFF
  */
-static void ia_off (uint8_t nr) {
-
-  if( nr < 8 ) {
-    preset_current.ia0_7 &= ~(1<<nr);
-  }
-  else if( nr < 16 ) {
-    preset_current.ia8_15 &= ~( 1 << (nr - 8) );
-  }
-  else if( nr < 24 ) {
-    preset_current.ia16_23 &= ~( 1 << (nr - 16) );
-  }
-  ia_t const*ia = 0;
-  settings_get_ia(nr, &ia);
+static void ia_off (uint8_t nr, ia_t const*ia) {
   if(ia != 0) {
     if(ia->type == IA_TYPE_CC) {
       midi_send_cc(ia->midi_chan, ia->midi_data0, ia->midi_data2);
@@ -680,20 +674,26 @@ static void ia_off (uint8_t nr) {
  */
 static void preset_send_midi(preset_t *preset) {
    // Send Program Chaneg - PC
-  pc_t *pc_s;
-  for(int i = 0; i < NUM_PCM; i++) {
-    settings_get_pc(i, pc_s);
+  pc_t const* pc_s = 0;
+  for(int i = 0; i < NUM_PC; i++) {
+    settings_get_pc(i, &pc_s);
     if(pc_s->mode == PC_MODE_ON) {
       midi_send_pc(pc_s->chan, preset->pc[i]);
     }
   }
 
   // Send Controller Change - CC
-  ia_t * ia_s;
-  for(int i = 0; i < NUM_CC; i++) {
-    settings_get_cc(i, cc_s);
+  ia_t const* ia_s;
+  for(int i = 0; i < NUM_IA; i++) {
+    settings_get_ia(i, &ia_s);
     if(ia_s->type == IA_TYPE_CC) {
-      midi_send_cc(ia_s->midi_chan, ia_s->midi_data0, ia_s->midi_data1);
+      // Evaluate resulting state
+      if(ia_get_state(i) == 0) {
+        ia_off(i, ia_s);
+      }
+      else {
+        ia_on(i, ia_s);
+      }
     }
     else if(ia_s->type == IA_TYPE_PC) {
       // TODO: Figure out how should work and implement
