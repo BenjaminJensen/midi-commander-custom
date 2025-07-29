@@ -1,0 +1,204 @@
+program_change:
+  - name: "Default PC0"
+    nr: 15
+    mode: PC_MODE_ON
+    chan: 0
+  - name: "Default PC1"
+    nr: 25
+    mode: PC_MODE_ON
+    chan: 2
+  - name: "Default PC2"
+    nr: 35
+    mode: PC_MODE_ON
+    chan: 4
+  - name: "Default PC3"
+    nr: 45
+    mode: PC_MODE_ON
+    chan: 6
+  - name: "Default PC4"
+    nr: 55
+    mode: PC_MODE_ON
+    chan: 8
+instant_access:
+  - id: "IA00"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 80
+    data1: 0x7f
+    data2: 0
+  - id: "IA01"
+    type: IA_TYPE_CC
+    mode: IA_MODE_TOGGLE
+    chan: 10
+    data0: 81
+    data1: 0x7f
+    data2: 0
+  - id: "IA02"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 82
+    data1: 0x7f
+    data2: 0
+  - id: "IA03"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 83
+    data1: 0x7f
+    data2: 0
+  - id: "IA03"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 84
+    data1: 0x7f
+    data2: 0
+  - id: "IA04"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 85
+    data1: 0x7f
+    data2: 0
+  - id: "IA05"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 86
+    data1: 0x7f
+    data2: 0
+  - id: "IA06"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 87
+    data1: 0x7f
+    data2: 0
+  - id: "IA07"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 88
+    data1: 0x7f
+    data2: 0
+  - id: "IA08"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 89
+    data1: 0x7f
+    data2: 0
+  - id: "IA14"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 90
+    data1: 0x7f
+    data2: 0
+  - id: "IA09"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 91
+    data1: 0x7f
+    data2: 0
+  - id: "IA10"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 92
+    data1: 0x7f
+    data2: 0
+  - id: "IA11"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 93
+    data1: 0x7f
+    data2: 0
+  - id: "IA12"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 94
+    data1: 0x7f
+    data2: 0
+  - id: "IA13"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 95
+    data1: 0x7f
+    data2: 0
+  - id: "IA14"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 96
+    data1: 0x7f
+    data2: 0
+  - id: "IA15"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 97
+    data1: 0x7f
+    data2: 0
+  - id: "IA16"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 98
+    data1: 0x7f
+    data2: 0
+  - id: "IA17"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 99
+    data1: 0x7f
+    data2: 0
+  - id: "IA18"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 100
+    data1: 0x7f
+    data2: 0
+  - id: "IA19"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 101
+    data1: 0x7f
+    data2: 0
+  - id: "IA20"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 102
+    data1: 0x7f
+    data2: 0
+  - id: "IA21"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 103
+    data1: 0x7f
+    data2: 0
+  - id: "IA22"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 104
+    data1: 0x7f
+    data2: 0
+  - id: "IA23"
+    type: IA_TYPE_CC
+    mode: IA_MODE_LATCH
+    chan: 10
+    data0: 105
+    data1: 0x7f
+    data2: 0

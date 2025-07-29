@@ -13,124 +13,124 @@ static const settings_t settings_factory = {
        .mode = PC_MODE_ON,
        .chan = 0,
        .pc = 0,
-       .name = "Default PC0",
+       .name = "ML10X",
      },
      {
        .mode = PC_MODE_ON,
-       .chan = 0,
+       .chan = 1,
        .pc = 1,
-       .name = "Default PC1",
+       .name = "H90",
      },
      {
        .mode = PC_MODE_ON,
-       .chan = 0,
+       .chan = 2,
        .pc = 2,
-       .name = "Default PC2",
+       .name = "TC X3",
      },
      {
        .mode = PC_MODE_ON,
-       .chan = 0,
+       .chan = 3,
        .pc = 3,
        .name = "Default PC3",
      },
      {
        .mode = PC_MODE_ON,
-       .chan = 0,
+       .chan = 4,
        .pc = 4,
        .name = "Default PC4",
      },
   },
   .ias = {
       // IA 0-7
+      // IA 0-9 formatted
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 80,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 10, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '0', 0},
       },
       {
         .type = IA_TYPE_CC,
-        .mode = IA_MODE_TOGGLE,
-        .midi_chan = 10,
-        .midi_data0 = 81,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .mode = IA_MODE_LATCH,
+        .midi_chan = 0,
+        .midi_data0 = 11, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '1', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 82,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 12, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '2', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 83,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 13, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '3', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 84,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 14, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '4', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 85,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 15, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '5', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 86,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 16, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '6', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 87,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 17, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '7', 0},
       },
-      // IA 8-15
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 88,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .midi_chan = 0,
+        .midi_data0 = 18, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '8', 0},
       },
       {
         .type = IA_TYPE_CC,
-        .mode = IA_MODE_TOGGLE,
-        .midi_chan = 10,
-        .midi_data0 = 89,
-        .midi_data1 = 0x7F,
-        .midi_data2 = 0,
+        .mode = IA_MODE_LATCH,
+        .midi_chan = 0,
+        .midi_data0 = 19, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '9', 0},
       },
       {

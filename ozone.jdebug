@@ -33,7 +33,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
-  File.Open ("$(ProjectDir)/MIDI_Commander_Custom/Debug/MIDI_Commander_Custom.elf");
+  File.Open ("$(ProjectDir)/MIDI_Commander_Custom/build/MIDI_Commander_Custom.elf");
 }
 
 /*********************************************************************

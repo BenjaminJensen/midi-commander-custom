@@ -77,10 +77,7 @@ void file_system_init() {
   }
 
   // Erase and format memory
-  //file_system_erase_memory();
-
-  // Test functions
-  //file_sys_init();
+  file_system_erase_memory();
 
   file_system_memory_setup();
 }

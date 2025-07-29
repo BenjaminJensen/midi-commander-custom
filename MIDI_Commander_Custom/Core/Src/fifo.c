@@ -7,8 +7,12 @@
 
 
 #include "fifo.h"
+#include <assert.h>
 
 int fifo_init(fifo_handler_t *handle, uint32_t mask, uint32_t *buffer) {
+   // Assert that (mask + 1) is a power of two
+  assert(((mask + 1) & mask) == 0 && "FIFO mask+1 must be a power of two!");
+
   handle->tail = 0;
   handle->head = 0;
   handle->mask = mask;
@@ -40,7 +44,7 @@ int fifo_put(fifo_handler_t *handle, uint32_t item) {
   return error;
 }
 
-int fifo_get(fifo_handler_t *handle, uint32_t *intem_out) {
+int fifo_get(fifo_handler_t *handle, uint32_t *item_out) {
   uint32_t tmptail;
   int error = FIFO_OK;
 
@@ -53,7 +57,7 @@ int fifo_get(fifo_handler_t *handle, uint32_t *intem_out) {
     handle->tail = tmptail;
 
     // get data from receive buffer
-    *intem_out = handle->buffer[tmptail];
+    *item_out = handle->buffer[tmptail];
   }
 
   return error;

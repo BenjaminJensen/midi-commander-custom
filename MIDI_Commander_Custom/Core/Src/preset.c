@@ -53,10 +53,13 @@ static void preset_handle_bank(event_t e);
 static void preset_page_next(void);
 static void preset_handle_ia(event_t e, uint8_t offset);
 static uint8_t preset_edited(void);
-static void preset_handle_pc(event_t e);
 static void preset_handle_preset(event_t e);
 
 static void preset_send_midi(preset_t *preset);
+
+// Edit PC functions
+static void handle_exit_pc_edit();
+static void preset_handle_pc(event_t e);
 
 /****************************************
  * Public functions
@@ -434,10 +437,7 @@ static void preset_handle_pc(event_t e) {
     case 4:
       // EXIT
       if(e.event.type == EVENT_BUTTON_RELEASE) {
-        if(preset_suppress_events == 0)
-          preset_state = PS_PRESET;
-        else
-          preset_suppress_events = 0;
+        handle_exit_pc_edit();
       }
       break;
 
@@ -477,6 +477,18 @@ static void preset_handle_pc(event_t e) {
   //log_msg("preset_handle_pc: pc%d = %d\n", preset_selected_pc, preset_current.pc[preset_selected_pc]);
 }
 
+static void handle_exit_pc_edit() {
+  // Save preset
+  settings_save_preset(preset_number_abs_current, &preset_current);
+
+  // Update display
+  preset_update_display();
+  log_msg("Exit PC edit mode\n");
+
+  // Reset state
+  preset_suppress_events = 0;
+  preset_state = PS_PRESET;
+}
 /*
  * @brief Next preset page event handler
  */
@@ -657,7 +669,7 @@ static void ia_on (uint8_t nr, ia_t const*ia) {
  */
 static void ia_off (uint8_t nr, ia_t const*ia) {
   if(ia != 0) {
-    if(ia->type == IA_TYPE_CC) {
+    if(ia->type == IA_TYPE_CC && ia->midi_data2 <= 0x7F) {
       midi_send_cc(ia->midi_chan, ia->midi_data0, ia->midi_data2);
     }
   }

@@ -1,2 +1,4 @@
 Debug/
 DFU Release/
+build/
+CMakefiles/

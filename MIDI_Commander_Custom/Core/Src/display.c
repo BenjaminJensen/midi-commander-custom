@@ -43,7 +43,7 @@ void display_init(I2C_HandleTypeDef *hi2c1){
   hi2c1_ = hi2c1;
   ssd1306_Init(hi2c1);
   draw_set_pixel_function(&draw_pixel_wrapper);
-  draw_set_fill_function(&ssd1306_Fill);
+  draw_set_fill_function((draw_fill_f)&ssd1306_Fill);
 
   //display_test();
   //ssd1306_UpdateScreen(hi2c1);

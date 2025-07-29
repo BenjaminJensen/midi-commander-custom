@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "settings_factory.h": "c",
+        "settings.h": "c"
+    },
+    "cmake.sourceDirectory": "F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom"
+}

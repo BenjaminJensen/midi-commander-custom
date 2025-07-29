@@ -188,6 +188,7 @@ int fs_read_variable(fs_memory_setup_t *fs_p, uint16_t v_addr, uint8_t *data) {
     error = fs_p->read(var_addr, data, fs_p->var_size);
   }
   else {
+    
     //log_msg("fs_read_variable: variable not found!\n");
     error = -2;
   }
