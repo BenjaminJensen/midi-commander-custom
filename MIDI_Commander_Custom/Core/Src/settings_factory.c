@@ -50,7 +50,7 @@ static const settings_t settings_factory = {
         .midi_data0 = 10, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '0', 0},
+        .id = {'S', 'P', 'E', 'C', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -59,7 +59,7 @@ static const settings_t settings_factory = {
         .midi_data0 = 11, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '1', 0},
+        .id = {'S', 'p', ' ', 'C', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -68,7 +68,7 @@ static const settings_t settings_factory = {
         .midi_data0 = 12, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '2', 0},
+        .id = {'E', 'P', ' ', 'B', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -77,8 +77,10 @@ static const settings_t settings_factory = {
         .midi_data0 = 13, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '3', 0},
+        .id = {'D', 'U', 'A', 'L', 0},
       },
+
+      /*  Moving arround in MX10L Loops due to D-TIP/RING inactivity*/
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
@@ -101,25 +103,26 @@ static const settings_t settings_factory = {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
         .midi_chan = 0,
-        .midi_data0 = 16, // CC number
-        .midi_data1 = 0xFF, // CC On value
-        .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '6', 0},
-      },
-      {
-        .type = IA_TYPE_CC,
-        .mode = IA_MODE_LATCH,
-        .midi_chan = 0,
-        .midi_data0 = 17, // CC number
-        .midi_data1 = 0xFF, // CC On value
-        .midi_data2 = 0x00, // CC Off value
-        .id = {'I', 'A', '0', '7', 0},
-      },
-      {
-        .type = IA_TYPE_CC,
-        .mode = IA_MODE_LATCH,
-        .midi_chan = 0,
         .midi_data0 = 18, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
+        .id = {'C', 'Y', 'O', 'N', 0},
+      },
+      {
+        .type = IA_TYPE_CC,
+        .mode = IA_MODE_LATCH,
+        .midi_chan = 0,
+        .midi_data0 = 19, // CC number
+        .midi_data1 = 0xFF, // CC On value
+        .midi_data2 = 0x00, // CC Off value
+        .id = {'L', 'I', 'G', 'H', 0},
+      },
+      /* ML10X D-RING/TIP */
+      {
+        .type = IA_TYPE_CC,
+        .mode = IA_MODE_LATCH,
+        .midi_chan = 0,
+        .midi_data0 = 16, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '8', 0},
@@ -128,7 +131,7 @@ static const settings_t settings_factory = {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
         .midi_chan = 0,
-        .midi_data0 = 19, // CC number
+        .midi_data0 = 17, // CC number
         .midi_data1 = 0xFF, // CC On value
         .midi_data2 = 0x00, // CC Off value
         .id = {'I', 'A', '0', '9', 0},
