@@ -43,6 +43,10 @@ static const settings_t settings_factory = {
   .ias = {
       // IA 0-7
       // IA 0-9 formatted
+
+/*************************************************
+Page 1: IA 0-7
+**************************************************/
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
@@ -117,6 +121,10 @@ static const settings_t settings_factory = {
         .midi_data2 = 0x00, // CC Off value
         .id = {'L', 'I', 'G', 'H', 0},
       },
+/*************************************************
+      Page 2: IA 8-15
+**************************************************/
+
       /* ML10X D-RING/TIP */
       {
         .type = IA_TYPE_CC,
@@ -139,20 +147,20 @@ static const settings_t settings_factory = {
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 90,
+        .midi_chan = 1,
+        .midi_data0 = 10,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
-        .id = {'I', 'A', '1', '0', 0},
+        .id = {'H', '9', '0', 'A', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 91,
+        .midi_chan = 1,
+        .midi_data0 = 11,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
-        .id = {'I', 'A', '1', '1', 0},
+        .id = {'H', '9', '0', 'B', 0},
       },
       {
         .type = IA_TYPE_CC,
@@ -166,31 +174,33 @@ static const settings_t settings_factory = {
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 93,
+        .midi_chan = 2,
+        .midi_data0 = 102,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
-        .id = {'I', 'A', '1', '3', 0},
+        .id = {'T', 'C', '1', ' ', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 94,
+        .midi_chan = 2,
+        .midi_data0 = 103,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
-        .id = {'I', 'A', '1', '4', 0},
+        .id = {'T', 'C', '2', ' ', 0},
       },
       {
         .type = IA_TYPE_CC,
         .mode = IA_MODE_LATCH,
-        .midi_chan = 10,
-        .midi_data0 = 95,
+        .midi_chan = 2,
+        .midi_data0 = 104,
         .midi_data1 = 0x7F,
         .midi_data2 = 0,
-        .id = {'I', 'A', '1', '5', 0},
+        .id = {'T', 'C', '3', ' ', 0},
       },
-      // IA 8-15
+/*************************************************
+      Page 3: IA 16-23
+**************************************************/
       {
        .type = IA_TYPE_CC,
        .mode = IA_MODE_LATCH,

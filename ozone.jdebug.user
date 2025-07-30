@@ -2,23 +2,22 @@
 
 Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Drivers/file_system/hal_flash_wrapper.c:28:3, State=BP_STATE_DISABLED
 Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Drivers/file_system/hal_flash_wrapper.c:60:72, State=BP_STATE_DISABLED
-Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/preset.c:203:8, State=BP_STATE_DISABLED
-Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/preset.c:218:3, State=BP_STATE_DISABLED
+Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/preset.c:233:3, State=BP_STATE_DISABLED
+Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/preset.c:435:3, State=BP_STATE_DISABLED
 Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/event.c:84:3, State=BP_STATE_DISABLED
-Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/settings.c:105:52, State=BP_STATE_DISABLED
-Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/display.c:163:44, State=BP_STATE_DISABLED
-OpenDocument="ozone.jdebug", FilePath="F:/git/stm32/midi-commander-custom/ozone.jdebug", Line=0
-OpenDocument="main.c", FilePath="F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/main.c", Line=84
+Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/settings.c:108:3, State=BP_STATE_DISABLED
+Breakpoint=F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/display.c:168:3, State=BP_STATE_DISABLED
+OpenDocument="main.c", FilePath="F:/git/stm32/midi-commander-custom/MIDI_Commander_Custom/Core/Src/main.c", Line=73
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=602, h=191, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=3, w=602, h=219, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=445, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=602, h=236, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=1, w=445, h=295, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=254
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=602, h=195, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=3, w=602, h=215, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=445, h=183, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=602, h=228, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=1, w=445, h=270, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=254
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=1059, h=476, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x20000398
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=2, w=602, h=177, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=3, w=445, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Functions", DockArea=LEFT, x=0, y=2, w=445, h=178, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=2, w=602, h=185, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=3, w=445, h=183, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=2, w=445, h=187, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=1097, h=476, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Console", DockArea=BOTTOM, x=1, y=0, w=1282, h=476, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
@@ -29,7 +28,8 @@ TableHeader="Functions", SortCol="Name", SortOrder="DESCENDING", VisibleCols=["N
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[164;112;158;100;168;100]
 TableHeader="Source Files", SortCol="File", SortOrder="DESCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[180;100;100;100;752]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Value";"Description"], ColWidths=[100;209;105;171]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Auto";"Name";"Value";"Description"], ColWidths=[100;209;105;224]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[100;178;100;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[27;27;27;31]
 WatchedExpression="event_handlers", Window=Watched Data 1

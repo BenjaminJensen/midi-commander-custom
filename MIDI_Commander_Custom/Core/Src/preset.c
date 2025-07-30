@@ -47,6 +47,8 @@ static void ia_change_state(uint8_t nr, uint8_t state);
 static void preset_bank_up(void);
 static void preset_bank_down(void);
 static void preset_load_relativ(uint8_t nr);
+static void preset_save();
+
 static void preset_update_display(void);
 static void preset_bank_display(int bank);
 static void preset_handle_bank(event_t e);
@@ -56,7 +58,7 @@ static uint8_t preset_edited(void);
 static void preset_handle_preset(event_t e);
 
 static void preset_send_midi(preset_t *preset);
-
+static void preset_copy_current_to_original();
 // Edit PC functions
 static void handle_exit_pc_edit();
 static void preset_handle_pc(event_t e);
@@ -185,6 +187,28 @@ static uint8_t preset_edited() {
   return edited;
 }
 
+static void preset_copy_current_to_original() {
+  preset_original.ia0_7 = preset_current.ia0_7;
+  preset_original.ia8_15 = preset_current.ia8_15;
+  preset_original.ia16_23 = preset_current.ia16_23;
+  for(int i = 0; i < NUM_PC; i++) {
+    preset_original.pc[i] = preset_current.pc[i];
+  }
+}
+/*
+ * @brief Saves the current preset state
+ */
+static void preset_save() {
+    // Save preset
+  settings_save_preset(preset_number_abs_current, &preset_current);
+
+
+  preset_copy_current_to_original();
+
+  // Reset state
+  preset_suppress_events = 0;
+  preset_state = PS_PRESET;
+}
 /*
  * @brief Update display on "Preset" page
  */
@@ -303,7 +327,13 @@ static void preset_handle_preset(event_t e) {
         preset_suppress_events = 1;
       }
       else if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_up();
+        // This handles a suppression from handle_ia: preset_save
+        if(preset_suppress_events == 1) {
+          preset_suppress_events = 0;
+        }
+        else {
+          preset_bank_up();
+        }
       }
       break;
     default:
@@ -338,7 +368,13 @@ static void preset_handle_bank(event_t e) {
       break;
     case 9:
       if(e.event.type == EVENT_BUTTON_RELEASE) {
-        preset_bank_up();
+        // This handles a suppression from handle_ia: preset_save
+        if(preset_suppress_events == 1) {
+          preset_suppress_events = 0;
+        }
+        else {
+          preset_bank_up();
+        }
       }
       break;
     default:
@@ -385,7 +421,10 @@ static void preset_handle_ia(event_t e, uint8_t offset) {
       break;
     case 9:
       if(e.event.type == EVENT_BUTTON_HOLD) {
-        settings_save_preset(preset_number_abs_current, &preset_current);
+        preset_save();
+        // Ensure "BUTTON_RELEAESE" is not handled
+        preset_suppress_events = 1;
+        // settings_save_preset(preset_number_abs_current, &preset_current);
       }
       break;
     default:
@@ -478,21 +517,20 @@ static void preset_handle_pc(event_t e) {
 }
 
 static void handle_exit_pc_edit() {
-  // Save preset
-  settings_save_preset(preset_number_abs_current, &preset_current);
 
+  preset_save();
   // Update display
   preset_update_display();
   log_msg("Exit PC edit mode\n");
 
-  // Reset state
-  preset_suppress_events = 0;
-  preset_state = PS_PRESET;
 }
 /*
  * @brief Next preset page event handler
  */
 static void preset_page_next() {
+  /*
+
+  // Tempory disable extra IA pages
   switch(preset_state) {
     case PS_PRESET:
       preset_state = PS_IA0;
@@ -509,7 +547,18 @@ static void preset_page_next() {
     default:
       break;
   }
-
+      */
+  switch(preset_state) {
+    case PS_PRESET:
+      preset_state = PS_IA0;
+      break;
+    case PS_IA0:
+      preset_state = PS_IA1;
+      break;
+    default:
+      preset_state = PS_PRESET;
+      break;
+  }
   log_msg("Next Page:%d\n", preset_state);
 }
 
@@ -590,6 +639,7 @@ static void preset_load_relativ(uint8_t nr) {
   error = settings_load_preset(new_preset, &preset_current);
 
   if(error == 0) {
+    preset_copy_current_to_original();
     // update bank number
     preset_bank_current = preset_bank_next;
     preset_state = PS_PRESET;
@@ -600,6 +650,10 @@ static void preset_load_relativ(uint8_t nr) {
   else if(error == -2) { // No saved preset
     // Reset preset
     preset_clear(&preset_current);
+    // Set an empty preset for saving
+    // TODO: Find a flow for saving presets to empty locations and/or creating presets in empty locations
+    preset_bank_current = preset_bank_next;
+    preset_state = PS_PRESET;
     log_msg("preset_load_relativ: preset(%d) not available\n", preset_number_abs_current);
   }
   else {

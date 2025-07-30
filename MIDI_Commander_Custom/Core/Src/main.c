@@ -102,7 +102,7 @@ int main(void)
   /* USER CODE BEGIN Init */
    SEGGER_RTT_Init();
    SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal - Bongo Controller\r\n");
-   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+   SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_TRIM);
   /* USER CODE END Init */
 
   /* Configure the system clock */
