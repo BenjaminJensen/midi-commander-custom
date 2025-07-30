@@ -17,9 +17,9 @@ Fonts build with https://larsee.com/blog/2014/05/converting-fonts-to-c-source-us
 - Preset Structure
 - IA structure with 3 pages of 8 switches
 - Settings system inplace
+- - Actual saving and loading of presets
 
 # Still to come
-- Actual saving and loading of presets
 - Mode switching [Preset, IA0, IA1, IA2, Edit]
 - Edit mode missing
 - USB: no focus on USB as it is not needed. It could however be used for host interfacing MIDI pedals
